@@ -26,25 +26,40 @@ condition   : 'zero'
 label       : NAME ':';
 
 // a bit annoying to specify newlines, but it's only for this so...
-data        : storage  '{'  data_list  '}';
+data        : storage  '{'  data_list  '}' # dataArry
+            | storage number               # dataSingle
+            ;
 
-storage     : NAME specifier? ':';
+storage     : NAME dimension specifier_list?;
 
-specifier   : '(' NAME (',' number)? ')';
+dimension   : '[' ']'        # dimEmpty
+            | '[' number ']' # dimNumber
+            ;
 
-data_list   : number  (','  number )* ','?;
+specifier_list : '(' specifier (',' specifier)* ','? ')';
+
+specifier   : NAME   # specName
+            | number # specNum
+            ;
+
+
+data_list   : data_element  (','  data_element )* ','?;
+
+data_element : number   # dataNumber
+             | variable # dataVariable
+             ;
 
 operands    : operand (',' operand)*;
 
 operand     : '[' operand ']'            # opRel
             | '[' operand ',' number ']' # opRelOff
-            | register                   # opReg
+            | reg                        # opReg
             | number                     # opNum
             | condition                  # opCond
-            | NAME                       # opName
+            | variable                   # opVar
             ;
 
-register    : REGISTER # reg
+reg         : REGISTER # regStandard
             | STACK    # regStack
             | BASE     # regBase
             ;
@@ -58,6 +73,10 @@ number      : DEC # numDec
             ;
 
 mnemonic    : NAME;
+
+variable    : NAME     # var
+            | '&' NAME # varAddr
+            ;
 
 // lexer
 

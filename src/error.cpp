@@ -41,6 +41,24 @@ void Error::AddWarning(string message, int line, string file, int code, int cols
   warnings.push_back(w);
 }
 
+void Error::AddRuleErr(string message, antlr4::ParserRuleContext* rule)
+{
+  int line = rule->start->getLine() - 1; // zero-indexed
+  int cols = rule->start->getCharPositionInLine();
+  int cole = cols + rule->stop->getStopIndex() - rule->start->getStartIndex();
+  string file = filepath;
+  AddError(message, line, file, 1, cols, cole);
+}
+
+void Error::AddRuleWarn(string message, antlr4::ParserRuleContext* rule)
+{
+  int line = rule->start->getLine() - 1; // zero-indexed
+  int cols = rule->start->getCharPositionInLine();
+  int cole = cols + rule->stop->getStopIndex() - rule->start->getStartIndex();
+  string file = filepath;
+  AddWarning(message, line, file, 1, cols, cole);
+}
+
 void Error::Report()
 {
   int num_errors = errors.size();

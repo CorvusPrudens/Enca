@@ -25,6 +25,9 @@ set (SOURCE_FILES
     utils.cpp
 
     ./assembler/assembler.cpp
+    ./assembler/operand.cpp
+    ./assembler/instruction.cpp
+    ./assembler/symbols.cpp
     )
 
 set (INCLUDE_FILES
@@ -34,7 +37,10 @@ set (INCLUDE_FILES
     error.h
     utils.h
 
-    assembler/assembler.h
+    ./assembler/assembler.h
+    ./assembler/operand.h
+    ./assembler/instruction.h
+    ./assembler/symbols.h
     )
 
 list (APPEND LINK_LIBS

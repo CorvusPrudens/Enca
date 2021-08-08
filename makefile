@@ -11,7 +11,9 @@ ANTLR_JAR = $(wildcard $(ANTLR_HOME)/*.jar)
 
 ANTLR = java -jar ${ANTLR_JAR}
 ANTLR_REL = java -jar ../../${ANTLR_JAR}
-GRUN = java org.antlr.v4.gui.TestRig
+CLASSP = -classpath .:../../../../$(ANTLR_JAR)
+
+GRUN = java ${CLASSP} org.antlr.v4.gui.TestRig
 
 EXAMPLE = test.enc
 EXAMPLE_PATH = $(SRC)/examples/$(EXAMPLE)
@@ -46,7 +48,7 @@ update_assembler_debug:
 java_build: $(GRAMMARS)/$(NAME).g4
 	$(info Building main assembler parse tree...)
 	@ cd $(GRAMMARS); ${ANTLR_REL} -o $(BUILD)/java ${NAME}.g4; \
-	javac -d $(BUILD)/java $(BUILD)/java/${NAME}*.java
+	cd $(BUILD)/java; javac $(CLASSP) ${NAME}*.java
 
 java_test: ${EXAMPLE_PATH}
 	$(info Executing main assembler parse tree...)

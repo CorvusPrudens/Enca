@@ -5,12 +5,14 @@
 #include <string>
 #include <vector>
 
+#include "antlr4-runtime.h"
+
 using std::string;
 
 class Error {
 
   public:
-    Error() {}
+    Error(string file) { filepath = file; }
     ~Error() {}
 
     struct item {
@@ -34,6 +36,9 @@ class Error {
       int colstart = -1, int colend = -1
     );
 
+    void AddRuleErr(string message, antlr4::ParserRuleContext* ctx);
+    void AddRuleWarn(string message, antlr4::ParserRuleContext* ctx);
+
     void Report();
 
   private:
@@ -44,6 +49,7 @@ class Error {
     static constexpr int max_errors = 20;
     std::vector<item> errors;
     std::vector<item> warnings;
+    string filepath;
 
 };
 

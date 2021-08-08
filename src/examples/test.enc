@@ -1,7 +1,10 @@
 
-data1 (flash, 0x200000): {
-  0x4142, 0xABAB, 0x5A5A, 0xDEADBEEF,
+data1[] (flash, 0x200000, align) {
+  0x4142, 0xABAB, 0x5A5A, 0xDEADBEEF, &data2,
 }
+
+data2[] 0x2
+data3[] (ram) 100
 
 init:
 // this indicates that the load should only occur if the condition is met:
