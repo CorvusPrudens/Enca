@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name
-project(Corax VERSION 1.0)
+project(Enca VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -44,11 +44,11 @@ list (APPEND LINK_LIBS
 
 # add the executable
 # add_executable(Compiler main.cpp)
-add_executable(cor Corvassembly.cpp
+add_executable(enca Enca.cpp
     ${SOURCE_FILES}
     ${INCLUDE_FILES}
     )
-target_link_libraries(corax PUBLIC ${LINK_LIBS})
+target_link_libraries(enca PUBLIC ${LINK_LIBS})
 # add_dependencies(Cp 
 #   antlr4_static 
 #   Compiler
