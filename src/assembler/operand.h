@@ -21,7 +21,7 @@ class Operand {
     };
 
     Operand() {}
-    ~Operand() {}
+    virtual ~Operand() {}
 
     virtual Class getClass() = 0;
     virtual string getIdentifier() { throw 1; }

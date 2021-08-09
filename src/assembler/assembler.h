@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
+
 #include "antlr4-runtime.h"
 #include "EncaLexer.h"
 #include "EncaParser.h"
@@ -18,6 +19,7 @@
 #include "operand.h"
 #include "number.h"
 #include "instruction.h"
+#include "symbols.h"
 
 using namespace antlr4;
 using antlrcpp::Any;
@@ -28,13 +30,13 @@ class PtrProperty {
 
   public:
     void put(tree::ParseTree* ctx, unique_ptr<T> ptr) {
-      properties[ctx] = ptr;
+      properties[ctx] = move(ptr);
     }
     T* get(tree::ParseTree* ctx) {
       return properties[ctx].get();
     }
     unique_ptr<T> getPtr(tree::ParseTree* ctx) {
-      return properties[ctx];
+      return move(properties[ctx]);
     }
 
   unordered_map<tree::ParseTree*, unique_ptr<T>> properties;
@@ -46,11 +48,20 @@ class Assembler : EncaBaseVisitor {
     Assembler(string file_, Error* err_);
     ~Assembler() {}
 
+    Error* err;
+    SymbolTable symbols;
     PtrProperty<Operand> operands;
     // unordered_map<tree::ParseTree*, unique_ptr<Operand>> operands;
     // tree::ParseTreeProperty<Operand> operands;
     tree::ParseTreeProperty<Number> numbers;
     vector<Instruction> instructions;
+
+    ANTLRInputStream stream;
+    EncaLexer lexer;
+    EncaParser parser;
+    CommonTokenStream tokens;
+
+  void Complete();
 
   Any visitInstr(EncaParser::InstrContext* ctx) override;
   Any visitInstrOper(EncaParser::InstrOperContext* ctx) override;

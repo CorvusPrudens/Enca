@@ -2,6 +2,23 @@
 #include "assembler.h"
 #include "number.h"
 
+Assembler::Assembler(string filename, Error* err_)
+: stream(filename)
+, lexer(&stream)
+, tokens(&lexer)
+, parser(&tokens)
+{
+  err = err_;
+
+  tree::ParseTree* parse_tree = parser.parse();
+  visit(parse_tree);
+}
+
+void Assembler::Complete()
+{
+  err->Report();
+}
+
 // TODO -- just compress this into one function!
 Any Assembler::visitInstr(EncaParser::InstrContext* ctx)
 {
@@ -51,26 +68,26 @@ Any Assembler::visitOpReg(EncaParser::OpRegContext* ctx)
 Any Assembler::visitOpNum(EncaParser::OpNumContext* ctx)
 {
   unique_ptr<Operand> reg = make_unique<NumberOp>(numbers.get(ctx->number()));
-  operands.put(ctx, reg);
+  operands.put(ctx, move(reg));
   return nullptr;
 }
 Any Assembler::visitOpCond(EncaParser::OpCondContext* ctx)
 {
   unique_ptr<Operand> reg = make_unique<ConditionOp>(ctx->condition()->getText());
-  operands.put(ctx, reg);
+  operands.put(ctx, move(reg));
   return nullptr;
 }
 Any Assembler::visitOpVar(EncaParser::OpVarContext* ctx)
 {
-  unique_ptr<Operand> reg = make_unique<VariableOp>(ctx->variable()->getText());
-  operands.put(ctx, reg);
+  unique_ptr<Operand> reg = make_unique<VariableOp>(ctx->variable()->getText(), &symbols);
+  operands.put(ctx, move(reg));
   return nullptr;
 }
 Any Assembler::visitOpRel(EncaParser::OpRelContext* ctx)
 {
   visitChildren(ctx);
   unique_ptr<Operand> op = operands.getPtr(ctx->operand());
-  operands.put(ctx, op);
+  operands.put(ctx, move(op));
   return nullptr;
 }
 

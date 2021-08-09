@@ -14,7 +14,7 @@ add_subdirectory(cli11)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/grammars/build/Corvassembly
+    ${CMAKE_SOURCE_DIR}/grammars/build
     ${CMAKE_SOURCE_DIR}/assembler
     ${CMAKE_SOURCE_DIR}/antlr4/runtime/Cpp/runtime/src
     ${CMAKE_SOURCE_DIR}/cli11/include/CLI/
