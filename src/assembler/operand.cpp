@@ -7,7 +7,7 @@ void Operand::setRelative(int16_t offset)
   isRelative = true;
 }
 
-Register::Register(string name)
+RegisterOp::RegisterOp(string name)
 {
   string* idx = std::find(Names, Names + REG_COUNT, name);
   if (idx == Names + REG_COUNT) throw name;
@@ -15,13 +15,7 @@ Register::Register(string name)
   index = (Index) (idx - Names);
 }
 
-uint16_t Number::getValue()
-{
-  uint16_t* ptr = (uint16_t*) value;
-  return *ptr;
-}
-
-Condition::Condition(string c)
+ConditionOp::ConditionOp(string c)
 {
   string* idx = std::find(Names, Names + COND_COUNT, c);
   if (idx == Names + COND_COUNT) throw c;
@@ -29,7 +23,7 @@ Condition::Condition(string c)
   condition = (Cond) (idx - Names);
 }
 
-uint16_t Variable::getValue()
+uint16_t VariableOp::getValue()
 {
   return table->GetSymbol(name).address;
 }

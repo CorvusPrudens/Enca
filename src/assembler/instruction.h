@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <string>
+#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "antlr4-runtime.h"
@@ -13,85 +15,90 @@
 using namespace std;
 using namespace antlr4;
 
+struct Mnemonic {
+  Mnemonic(string n, uint32_t op) {
+    name = n;
+    opcode = op;
+  }
+  string name;
+  uint32_t opcode;
+};
+
+#define M(name, opcode) \
+{name, Mnemonic(name, opcode)}
+
 class Instruction {
   public:
 
     Instruction(string mnem, ParserRuleContext* c);
     ~Instruction() {}
 
-    inline static string mnemonics[] = {
-      "nop", "ldr", "str", "mov", "cmp", 
-      "cps", "add", "sub", "mul", "div", 
-      "mod", "and", "or",  "xor", "not", 
-      "lsl", "lsr", "jmp", "push", "pop",
-    };
-
-    enum Index {
-      NOP=0, LDR, STR, MOV, CMP,
-      CPS, ADD, SUB, MUL, DIV,
-      MOD, AND, OR, XOR, NOT,
-      LSL, LSR, JMP, PUSH, POP,
-      OP_COUNT,
+    inline static unordered_map<string, Mnemonic> mnemonics = {
+      M("nop", 0x00), M("ldr", 0x01), M("str", 0x02), M("mov", 0x05),
+      M("cmp", 0x03), M("cps", 0x04), M("add", 0x05), M("sub", 0x06),
+      M("mul", 0x07), M("div", 0x08), M("mod", 0x09), M("and", 0x0A),
+      M("or", 0x0B),  M("xor", 0x0C), M("not", 0x0D), M("lsl", 0x0E),
+      M("lsr", 0x0F), M("jmp", 0x10), M("push", 0x11),M("pop", 0x12),
     };
 
     void setMnemonic(string& mnem);
-    void addOperand(Operand& op);
-    void setCondition(Condition cond);
-    uint16_t Assemble(Error* err) { return (this->*methods[index])(err); }
+    void addOperand(Operand* op);
+    void setCondition(Operand* cond) { condition = cond; conditional = true; }
+    uint32_t Assemble(Error* err);
 
-    uint16_t AssembleNop(Error* err);
-    uint16_t AssembleLdr(Error* err);
-    uint16_t AssembleStr(Error* err);
-    uint16_t AssembleMov(Error* err);
+    uint32_t AssembleNop(Error* err);
+    uint32_t AssembleLdr(Error* err);
+    uint32_t AssembleStr(Error* err);
+    uint32_t AssembleMov(Error* err);
 
-    uint16_t AssembleCmp(Error* err);
-    uint16_t AssembleCps(Error* err);
-    uint16_t AssembleAdd(Error* err);
-    uint16_t AssembleSub(Error* err);
+    uint32_t AssembleCmp(Error* err);
+    uint32_t AssembleCps(Error* err);
+    uint32_t AssembleAdd(Error* err);
+    uint32_t AssembleSub(Error* err);
 
-    uint16_t AssembleMul(Error* err);
-    uint16_t AssembleDiv(Error* err);
-    uint16_t AssembleMod(Error* err);
-    uint16_t AssembleAnd(Error* err);
+    uint32_t AssembleMul(Error* err);
+    uint32_t AssembleDiv(Error* err);
+    uint32_t AssembleMod(Error* err);
+    uint32_t AssembleAnd(Error* err);
 
-    uint16_t AssembleOr(Error* err);
-    uint16_t AssembleXor(Error* err);
-    uint16_t AssembleNot(Error* err);
-    uint16_t AssembleLsl(Error* err);
+    uint32_t AssembleOr(Error* err);
+    uint32_t AssembleXor(Error* err);
+    uint32_t AssembleNot(Error* err);
+    uint32_t AssembleLsl(Error* err);
 
-    uint16_t AssembleLsr(Error* err);
-    uint16_t AssembleJmp(Error* err);
-    uint16_t AssemblePush(Error* err);
-    uint16_t AssemblePop(Error* err);
+    uint32_t AssembleLsr(Error* err);
+    uint32_t AssembleJmp(Error* err);
+    uint32_t AssemblePush(Error* err);
+    uint32_t AssemblePop(Error* err);
 
-    typedef uint16_t (Instruction::*AssembleInstr)(Error*);
+    typedef uint32_t (Instruction::*AssembleInstr)(Error*);
 
-    AssembleInstr methods[OP_COUNT] = {
-      &Instruction::AssembleNop,
-      &Instruction::AssembleLdr,
-      &Instruction::AssembleStr,
-      &Instruction::AssembleMov,
-      &Instruction::AssembleCmp,
-      &Instruction::AssembleCps,
-      &Instruction::AssembleAdd,
-      &Instruction::AssembleSub,
-      &Instruction::AssembleMul,
-      &Instruction::AssembleDiv,
-      &Instruction::AssembleMod,
-      &Instruction::AssembleAnd,
-      &Instruction::AssembleOr,
-      &Instruction::AssembleXor,
-      &Instruction::AssembleNot,
-      &Instruction::AssembleLsl,
-      &Instruction::AssembleLsr,
-      &Instruction::AssembleJmp,
-      &Instruction::AssemblePush,
-      &Instruction::AssemblePop,
+    unordered_map<string, AssembleInstr> methods = {
+      {"nop", &Instruction::AssembleNop},
+      {"ldr", &Instruction::AssembleLdr},
+      {"str", &Instruction::AssembleStr},
+      {"mov", &Instruction::AssembleMov},
+      {"cmp", &Instruction::AssembleCmp},
+      {"cps", &Instruction::AssembleCps},
+      {"add", &Instruction::AssembleAdd},
+      {"sub", &Instruction::AssembleSub},
+      {"mul", &Instruction::AssembleMul},
+      {"div", &Instruction::AssembleDiv},
+      {"mod", &Instruction::AssembleMod},
+      {"and", &Instruction::AssembleAnd},
+      {"or",  &Instruction::AssembleOr},
+      {"xor", &Instruction::AssembleXor},
+      {"not", &Instruction::AssembleNot},
+      {"lsl", &Instruction::AssembleLsl},
+      {"lsr", &Instruction::AssembleLsr},
+      {"jmp", &Instruction::AssembleJmp},
+      {"push",&Instruction::AssemblePush},
+      {"pop", &Instruction::AssemblePop},
     };
 
-    Index index;
-    vector<Operand> operands;
-    Condition condition;
+    string mnemonic;
+    vector<Operand*> operands;
+    Operand* condition;
     bool conditional;
     ParserRuleContext* ctx;
 };

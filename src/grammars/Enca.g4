@@ -51,12 +51,11 @@ data_element : number   # dataNumber
 
 operands    : operand (',' operand)*;
 
-operand     : '[' operand ']'            # opRel
-            | '[' operand ',' number ']' # opRelOff
-            | reg                        # opReg
-            | number                     # opNum
-            | condition                  # opCond
-            | variable                   # opVar
+operand     : '[' operand (',' number)? ']' # opRel
+            | reg                           # opReg
+            | number                        # opNum
+            | condition                     # opCond
+            | variable                      # opVar
             ;
 
 reg         : REGISTER # regStandard

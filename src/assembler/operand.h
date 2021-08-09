@@ -4,6 +4,7 @@
 
 #include <string>
 #include "symbols.h"
+#include "number.h"
 
 using std::string;
 
@@ -33,7 +34,7 @@ class Operand {
 
 };
 
-class Register : public Operand {
+class RegisterOp : public Operand {
   
   public:
 
@@ -62,8 +63,8 @@ class Register : public Operand {
       "bp",
     };
 
-    Register(string name);
-    ~Register() {}
+    RegisterOp(string name);
+    ~RegisterOp() {}
 
     Class getClass() override { return Class::REGISTER; }
     uint16_t getValue() override { return (uint16_t) index; }
@@ -71,30 +72,24 @@ class Register : public Operand {
     Index index;
 };
 
-class Number : public Operand {
+class NumberOp : public Operand {
   
   public:
 
-    Number() {}
-    ~Number() {}
-
-    template <typename T>
-    void setValue(T val) {
-      T* ptr = (T*) value;
-      *ptr = val;
-    }
+    NumberOp(Number n) { number = n; }
+    ~NumberOp() {}
 
     Class getClass() override { return Class::NUMBER; }
 
     /** Truncates whatever bits were input into a 16 bit word
      * 
      */
-    uint16_t getValue() override;
+    uint16_t getValue() override { return number.getValue(); }
 
-    uint8_t value[16];
+    Number number;
 };
 
-class Condition : public Operand {
+class ConditionOp : public Operand {
   
   public:
 
@@ -117,9 +112,9 @@ class Condition : public Operand {
       "less",
     };
 
-    Condition() {}
-    Condition(string c);
-    ~Condition() {}
+    ConditionOp() {}
+    ConditionOp(string c);
+    ~ConditionOp() {}
 
     Class getClass() override { return Class::CONDITION; }
     uint16_t getValue() override { return (uint16_t) condition; }
@@ -127,12 +122,12 @@ class Condition : public Operand {
     Cond condition;
 };
 
-class Variable : public Operand {
+class VariableOp : public Operand {
   
   public:
 
-    Variable(string n, SymbolTable* t) { name = n; table = t; }
-    ~Variable() {}
+    VariableOp(string n, SymbolTable* t) { name = n; table = t; }
+    ~VariableOp() {}
 
     Class getClass() override { return Class::NAME; }
     string getIdentifier() override { return name; }
