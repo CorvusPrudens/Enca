@@ -10,11 +10,14 @@ using namespace std;
 class Symbol {
 
   public:
-    Symbol(bool label = false);
+    Symbol() {}
+    Symbol(string n);
+    Symbol(string n, size_t idx);
     ~Symbol() {}
 
     string name;
     uint16_t address;
+    size_t index;
     bool isLabel;
 };
 

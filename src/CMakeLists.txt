@@ -28,6 +28,12 @@ set (SOURCE_FILES
     ./assembler/operand.cpp
     ./assembler/instruction.cpp
     ./assembler/symbols.cpp
+
+    ./grammars/build/EncaVisitor.cpp
+    ./grammars/build/EncaListener.cpp
+    ./grammars/build/EncaLexer.cpp
+    ./grammars/build/EncaParser.cpp
+    
     )
 
 set (INCLUDE_FILES
@@ -41,6 +47,7 @@ set (INCLUDE_FILES
     ./assembler/operand.h
     ./assembler/instruction.h
     ./assembler/symbols.h
+    ./assembler/number.h
     )
 
 list (APPEND LINK_LIBS

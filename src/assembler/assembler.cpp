@@ -3,7 +3,8 @@
 #include "number.h"
 
 Assembler::Assembler(string filename, Error* err_)
-: stream(filename)
+: input(filename)
+, stream(input)
 , lexer(&stream)
 , tokens(&lexer)
 , parser(&tokens)
@@ -17,6 +18,13 @@ Assembler::Assembler(string filename, Error* err_)
 void Assembler::Complete()
 {
   err->Report();
+}
+
+Any Assembler::visitStatLab(EncaParser::StatLabContext* ctx)
+{
+  Symbol s(ctx->label()->NAME()->getText(), instructions.size());
+  symbols.AddSymbol(s);
+  return nullptr;
 }
 
 // TODO -- just compress this into one function!
@@ -116,8 +124,14 @@ Any Assembler::visitNumSci(EncaParser::NumSciContext *ctx) {
 }
 
 Any Assembler::visitNumHex(EncaParser::NumHexContext *ctx) {
-  uint16_t value = stoi(ctx->getText(), nullptr, 16);
+  uint16_t value = 0;
   Number num;
+  try {
+    value = stoi(ctx->getText(), nullptr, 16);
+  } catch (std::out_of_range e) {
+    string mess = "literal out of range of 16-bit word";
+    err->AddRuleErr(mess, ctx);
+  }
   num.setValue(value, Number::Type::INT);
   numbers.put(ctx, num);
   return nullptr;

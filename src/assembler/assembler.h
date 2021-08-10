@@ -2,6 +2,7 @@
 #ifndef ENCA_ASSEMBLER_H
 #define ENCA_ASSEMBLER_H
 
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -42,7 +43,7 @@ class PtrProperty {
   unordered_map<tree::ParseTree*, unique_ptr<T>> properties;
 };
 
-class Assembler : EncaBaseVisitor {
+class Assembler : public EncaBaseVisitor {
 
   public:
     Assembler(string file_, Error* err_);
@@ -56,30 +57,34 @@ class Assembler : EncaBaseVisitor {
     tree::ParseTreeProperty<Number> numbers;
     vector<Instruction> instructions;
 
+
+    fstream input;
     ANTLRInputStream stream;
     EncaLexer lexer;
     EncaParser parser;
     CommonTokenStream tokens;
 
-  void Complete();
+    void Complete();
 
-  Any visitInstr(EncaParser::InstrContext* ctx) override;
-  Any visitInstrOper(EncaParser::InstrOperContext* ctx) override;
-  Any visitInstrCond(EncaParser::InstrCondContext* ctx) override;
-  Any visitInstrOperCond(EncaParser::InstrOperCondContext* ctx) override;
+    Any visitInstr(EncaParser::InstrContext* ctx) override;
+    Any visitInstrOper(EncaParser::InstrOperContext* ctx) override;
+    Any visitInstrCond(EncaParser::InstrCondContext* ctx) override;
+    Any visitInstrOperCond(EncaParser::InstrOperCondContext* ctx) override;
 
-  Any visitOpReg(EncaParser::OpRegContext* ctx) override;
-  Any visitOpNum(EncaParser::OpNumContext* ctx) override;
-  Any visitOpCond(EncaParser::OpCondContext* ctx) override;
-  Any visitOpVar(EncaParser::OpVarContext* ctx) override;
-  Any visitOpRel(EncaParser::OpRelContext* ctx) override;
+    Any visitOpReg(EncaParser::OpRegContext* ctx) override;
+    Any visitOpNum(EncaParser::OpNumContext* ctx) override;
+    Any visitOpCond(EncaParser::OpCondContext* ctx) override;
+    Any visitOpVar(EncaParser::OpVarContext* ctx) override;
+    Any visitOpRel(EncaParser::OpRelContext* ctx) override;
 
-  Any visitNumDec(EncaParser::NumDecContext *ctx) override;
-  Any visitNumFlt(EncaParser::NumFltContext *ctx) override;
-  Any visitNumSci(EncaParser::NumSciContext *ctx) override;
-  Any visitNumHex(EncaParser::NumHexContext *ctx) override;
-  Any visitNumBin(EncaParser::NumBinContext *ctx) override;
-  Any visitNumOct(EncaParser::NumOctContext *ctx) override;
+    Any visitNumDec(EncaParser::NumDecContext *ctx) override;
+    Any visitNumFlt(EncaParser::NumFltContext *ctx) override;
+    Any visitNumSci(EncaParser::NumSciContext *ctx) override;
+    Any visitNumHex(EncaParser::NumHexContext *ctx) override;
+    Any visitNumBin(EncaParser::NumBinContext *ctx) override;
+    Any visitNumOct(EncaParser::NumOctContext *ctx) override;
+
+    Any visitStatLab(EncaParser::StatLabContext* ctx) override;
 
 };
 

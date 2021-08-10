@@ -31,106 +31,106 @@ uint32_t Instruction::Assemble(Error* err)
   return 0;
 }
 
-uint32_t AssembleNop(Error* err)
+uint32_t Instruction::AssembleNop(Error* err)
 {
 
   return 0;
 }
-uint32_t AssembleLdr(Error* err)
+uint32_t Instruction::AssembleLdr(Error* err)
 {
 
   return 0;
 }
-uint32_t AssembleStr(Error* err)
+uint32_t Instruction::AssembleStr(Error* err)
 {
 
   return 0;
 }
-uint32_t AssembleMov(Error* err)
-{
-
-  return 0;
-}
-
-uint32_t AssembleCmp(Error* err)
-{
-
-  return 0;
-}
-uint32_t AssembleCps(Error* err)
-{
-
-  return 0;
-}
-uint32_t AssembleAdd(Error* err)
-{
-
-  return 0;
-}
-uint32_t AssembleSub(Error* err)
+uint32_t Instruction::AssembleMov(Error* err)
 {
 
   return 0;
 }
 
-uint32_t AssembleMul(Error* err)
+uint32_t Instruction::AssembleCmp(Error* err)
 {
 
   return 0;
 }
-uint32_t AssembleDiv(Error* err)
+uint32_t Instruction::AssembleCps(Error* err)
 {
 
   return 0;
 }
-uint32_t AssembleMod(Error* err)
+uint32_t Instruction::AssembleAdd(Error* err)
 {
 
   return 0;
 }
-uint32_t AssembleAnd(Error* err)
-{
-
-  return 0;
-}
-
-uint32_t AssembleOr(Error* err)
-{
-
-  return 0;
-}
-uint32_t AssembleXor(Error* err)
-{
-
-  return 0;
-}
-uint32_t AssembleNot(Error* err)
-{
-
-  return 0;
-}
-uint32_t AssembleLsl(Error* err)
+uint32_t Instruction::AssembleSub(Error* err)
 {
 
   return 0;
 }
 
-uint32_t AssembleLsr(Error* err)
+uint32_t Instruction::AssembleMul(Error* err)
 {
 
   return 0;
 }
-uint32_t AssembleJmp(Error* err)
+uint32_t Instruction::AssembleDiv(Error* err)
 {
 
   return 0;
 }
-uint32_t AssemblePush(Error* err)
+uint32_t Instruction::AssembleMod(Error* err)
 {
 
   return 0;
 }
-uint32_t AssemblePop(Error* err)
+uint32_t Instruction::AssembleAnd(Error* err)
+{
+
+  return 0;
+}
+
+uint32_t Instruction::AssembleOr(Error* err)
+{
+
+  return 0;
+}
+uint32_t Instruction::AssembleXor(Error* err)
+{
+
+  return 0;
+}
+uint32_t Instruction::AssembleNot(Error* err)
+{
+
+  return 0;
+}
+uint32_t Instruction::AssembleLsl(Error* err)
+{
+
+  return 0;
+}
+
+uint32_t Instruction::AssembleLsr(Error* err)
+{
+
+  return 0;
+}
+uint32_t Instruction::AssembleJmp(Error* err)
+{
+
+  return 0;
+}
+uint32_t Instruction::AssemblePush(Error* err)
+{
+
+  return 0;
+}
+uint32_t Instruction::AssemblePop(Error* err)
 {
 
   return 0;

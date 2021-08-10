@@ -43,7 +43,7 @@ void Error::AddWarning(string message, int line, string file, int code, int cols
 
 void Error::AddRuleErr(string message, antlr4::ParserRuleContext* rule)
 {
-  int line = rule->start->getLine() - 1; // zero-indexed
+  int line = rule->start->getLine();
   int cols = rule->start->getCharPositionInLine();
   int cole = cols + rule->stop->getStopIndex() - rule->start->getStartIndex();
   string file = filepath;
@@ -52,7 +52,7 @@ void Error::AddRuleErr(string message, antlr4::ParserRuleContext* rule)
 
 void Error::AddRuleWarn(string message, antlr4::ParserRuleContext* rule)
 {
-  int line = rule->start->getLine() - 1; // zero-indexed
+  int line = rule->start->getLine();
   int cols = rule->start->getCharPositionInLine();
   int cole = cols + rule->stop->getStopIndex() - rule->start->getStartIndex();
   string file = filepath;

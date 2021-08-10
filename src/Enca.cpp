@@ -1,11 +1,12 @@
 
 #include <iostream>
-#include <sstream>
 #include <filesystem>
 
 #include "CLI.hpp"
 #include "assembler.h"
 #include "error.h"
+
+using namespace std;
 
 int main(int argc, const char* argv[])
 {
@@ -23,6 +24,14 @@ int main(int argc, const char* argv[])
 
   Error err(filename);
   Assembler enca(filename, &err);
+
+  for (auto& inst : enca.instructions) {
+    cout << inst.mnemonic << "\n";
+  }
+  for (auto& pair : enca.symbols.symbols)
+  {
+    cout << pair.first << " " << pair.second.index << "\n";
+  }
 
   enca.Complete();
 

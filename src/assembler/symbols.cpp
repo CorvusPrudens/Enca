@@ -1,10 +1,20 @@
 
 #include "symbols.h"
 
-Symbol::Symbol(bool label)
+Symbol::Symbol(string n)
 {
-  isLabel = label;
+  name = n;
+  isLabel = false;
   address = 0;
+  index = 0;
+}
+
+Symbol::Symbol(string n, size_t idx)
+{
+  name = n;
+  isLabel = true;
+  address = 0;
+  index = idx;
 }
 
 void SymbolTable::AddSymbol(Symbol& s)
