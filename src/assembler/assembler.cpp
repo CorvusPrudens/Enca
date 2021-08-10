@@ -13,6 +13,24 @@ Assembler::Assembler(string filename, Error* err_)
 
   tree::ParseTree* parse_tree = parser.parse();
   visit(parse_tree);
+
+  size_t address = 0;
+  for (int i = 0; i < instructions.size(); i++) {
+    for (auto& symbol : symbols.symbols) {
+      if (symbol.second.isLabel && symbol.second.index == i) {
+        symbol.second.address = address;
+      }
+    }
+    address += instructions[i].GetSize(err);
+  }
+
+  for (auto& instruction : instructions)
+  {
+    Machine& temp = instruction.Assemble(err);
+    for (auto byte : temp.bytes) {
+      machine_code.push_back(byte);
+    }
+  }
 }
 
 void Assembler::Complete()
@@ -68,34 +86,35 @@ Any Assembler::visitInstrOperCond(EncaParser::InstrOperCondContext* ctx)
 
 Any Assembler::visitOpReg(EncaParser::OpRegContext* ctx)
 {
-  unique_ptr<Operand> reg = make_unique<RegisterOp>(ctx->reg()->getText());
-  operands.put(ctx, move(reg));
+  CREATE_OP(RegisterOp, ctx->reg()->getText())
   return nullptr;
 }
 
 Any Assembler::visitOpNum(EncaParser::OpNumContext* ctx)
 {
-  unique_ptr<Operand> reg = make_unique<NumberOp>(numbers.get(ctx->number()));
-  operands.put(ctx, move(reg));
+  CREATE_OP(NumberOp, numbers.get(ctx->number()))
   return nullptr;
 }
 Any Assembler::visitOpCond(EncaParser::OpCondContext* ctx)
 {
-  unique_ptr<Operand> reg = make_unique<ConditionOp>(ctx->condition()->getText());
-  operands.put(ctx, move(reg));
+  CREATE_OP(ConditionOp, ctx->condition()->getText())
   return nullptr;
 }
 Any Assembler::visitOpVar(EncaParser::OpVarContext* ctx)
 {
-  unique_ptr<Operand> reg = make_unique<VariableOp>(ctx->variable()->getText(), &symbols);
-  operands.put(ctx, move(reg));
+  CREATE_OP(VariableOp, ctx->variable()->getText(), &symbols)
   return nullptr;
 }
 Any Assembler::visitOpRel(EncaParser::OpRelContext* ctx)
 {
   visitChildren(ctx);
-  unique_ptr<Operand> op = operands.getPtr(ctx->operand());
-  operands.put(ctx, move(op));
+  auto op = operands.get(ctx->operand());
+  uint16_t offset = 0;
+  if (ctx->number() != nullptr) {
+    offset = numbers.get(ctx->number()).getValue();
+  }
+  op->setRelative(offset);
+  operands.put(ctx, operands.getPtr(ctx->operand()));
   return nullptr;
 }
 

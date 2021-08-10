@@ -15,11 +15,19 @@
 using namespace std;
 using namespace antlr4;
 
+struct Machine {
+  uint32_t size = 0;
+  vector<uint8_t> bytes;
+  void setBytes(uint32_t word, size_t num_bytes);
+};
+
 struct Mnemonic {
   Mnemonic(string n, uint32_t op) {
     name = n;
     opcode = op;
   }
+  Mnemonic() {}
+  ~Mnemonic() {}
   string name;
   uint32_t opcode;
 };
@@ -43,37 +51,38 @@ class Instruction {
 
     void setMnemonic(string& mnem);
     void addOperand(Operand* op);
-    void setCondition(Operand* cond) { condition = cond; conditional = true; }
-    uint32_t Assemble(Error* err);
+    void setCondition(Operand* cond) { condition = cond; }
+    uint32_t GetSize(Error* err);
+    Machine& Assemble(Error* err);
 
-    uint32_t AssembleNop(Error* err);
-    uint32_t AssembleLdr(Error* err);
-    uint32_t AssembleStr(Error* err);
-    uint32_t AssembleMov(Error* err);
+    void AssembleNop(Error* err, bool query);
+    void AssembleLdr(Error* err, bool query);
+    void AssembleStr(Error* err, bool query);
+    void AssembleMov(Error* err, bool query);
 
-    uint32_t AssembleCmp(Error* err);
-    uint32_t AssembleCps(Error* err);
-    uint32_t AssembleAdd(Error* err);
-    uint32_t AssembleSub(Error* err);
+    void AssembleCmp(Error* err, bool query);
+    void AssembleCps(Error* err, bool query);
+    void AssembleAdd(Error* err, bool query);
+    void AssembleSub(Error* err, bool query);
 
-    uint32_t AssembleMul(Error* err);
-    uint32_t AssembleDiv(Error* err);
-    uint32_t AssembleMod(Error* err);
-    uint32_t AssembleAnd(Error* err);
+    void AssembleMul(Error* err, bool query);
+    void AssembleDiv(Error* err, bool query);
+    void AssembleMod(Error* err, bool query);
+    void AssembleAnd(Error* err, bool query);
 
-    uint32_t AssembleOr(Error* err);
-    uint32_t AssembleXor(Error* err);
-    uint32_t AssembleNot(Error* err);
-    uint32_t AssembleLsl(Error* err);
+    void AssembleOr(Error* err, bool query);
+    void AssembleXor(Error* err, bool query);
+    void AssembleNot(Error* err, bool query);
+    void AssembleLsl(Error* err, bool query);
 
-    uint32_t AssembleLsr(Error* err);
-    uint32_t AssembleJmp(Error* err);
-    uint32_t AssemblePush(Error* err);
-    uint32_t AssemblePop(Error* err);
+    void AssembleLsr(Error* err, bool query);
+    void AssembleJmp(Error* err, bool query);
+    void AssemblePush(Error* err, bool query);
+    void AssemblePop(Error* err, bool query);
 
-    typedef uint32_t (Instruction::*AssembleInstr)(Error*);
+    typedef void (Instruction::*AssembleInstr)(Error*, bool);
 
-    unordered_map<string, AssembleInstr> methods = {
+    inline static unordered_map<string, AssembleInstr> methods = {
       {"nop", &Instruction::AssembleNop},
       {"ldr", &Instruction::AssembleLdr},
       {"str", &Instruction::AssembleStr},
@@ -99,8 +108,8 @@ class Instruction {
     string mnemonic;
     vector<Operand*> operands;
     Operand* condition;
-    bool conditional;
     ParserRuleContext* ctx;
+    Machine machine;
 };
 
 

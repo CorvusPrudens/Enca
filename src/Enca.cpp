@@ -33,6 +33,12 @@ int main(int argc, const char* argv[])
     cout << pair.first << " " << pair.second.index << "\n";
   }
 
+  cout << "\n";
+
+  for (auto byte : enca.machine_code) {
+    cout << to_string(byte) << "\n";
+  }
+
   enca.Complete();
 
   return 0;

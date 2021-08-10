@@ -1,6 +1,15 @@
 
 #include "instruction.h"
 
+void Machine::setBytes(uint32_t word, size_t num_bytes)
+{
+  for (int i = 0; i < num_bytes; i++)
+  {
+    uint8_t byte = word >> (8 * i);
+    bytes.push_back(byte);
+  }
+}
+
 Instruction::Instruction(string mnem, ParserRuleContext* c)
 {
   // string* idx = std::find(mnemonics, mnemonics + OP_COUNT, mnem);
@@ -8,6 +17,7 @@ Instruction::Instruction(string mnem, ParserRuleContext* c)
 
   // index = (Index) (idx - mnemonics);
   // ctx = c;
+  condition = nullptr;
   mnemonic = mnem;
   ctx = c;
 }
@@ -16,122 +26,247 @@ void Instruction::addOperand(Operand* op) {
   operands.push_back(op);
 }
 
-uint32_t Instruction::Assemble(Error* err) 
+uint32_t Instruction::GetSize(Error* err)
+{
+  if (methods.count(mnemonic) > 0) { 
+    (this->*methods[mnemonic])(err, true);
+    return machine.size;
+  } else { 
+    return 0;
+  } 
+}
+
+Machine& Instruction::Assemble(Error* err) 
 { 
-  if (methods.count(mnemonic) > 0) {
-    try {
-      return (this->*methods[mnemonic])(err); 
-    } catch (int e) {
-      // TODO -- expand on this
-      err->AddRuleErr("malformed arguments", ctx);
-    }
+  if (methods.count(mnemonic) > 0) { 
+    try { 
+      (this->*methods[mnemonic])(err, false); 
+    } catch (int e) { 
+      err->AddRuleErr("malformed arguments", ctx); 
+    } 
+  } else { 
+    err->AddRuleErr("unexpected mnemonic \"" + mnemonic + "\"", ctx); 
+  } 
+  return machine;
+}
+
+#define WORD_BYTES 2
+
+void Instruction::AssembleNop(Error* err, bool query)
+{
+  if (query)
+    machine.size = WORD_BYTES;
+  else
+    machine.bytes = {0, 0};
+}
+void Instruction::AssembleLdr(Error* err, bool query)
+{
+  if (query) {
+
+    machine.size = WORD_BYTES * 2;
   } else {
-    err->AddRuleErr("unexpected mnemonic \"" + mnemonic + "\"", ctx);
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
   }
-  return 0;
+}
+void Instruction::AssembleStr(Error* err, bool query)
+{
+  if (query) {
+
+    machine.size = WORD_BYTES * 2;
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
+void Instruction::AssembleMov(Error* err, bool query)
+{
+  if (query) {
+
+    machine.size = WORD_BYTES;
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }
 
-uint32_t Instruction::AssembleNop(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleLdr(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleStr(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleMov(Error* err)
-{
-
-  return 0;
+#define TYPICAL_SIZE \
+switch (operands[1]->getClass()) \
+{ \
+  case Operand::Class::REGISTER: \
+    if (operands[1]->isRelative) \
+      machine.size = WORD_BYTES * 2; \
+    else \
+      machine.size = WORD_BYTES; \
+    break; \
+  default: \
+    machine.size = WORD_BYTES * 2; \
+    break; \
 }
 
-uint32_t Instruction::AssembleCmp(Error* err)
+void Instruction::AssembleCmp(Error* err, bool query)
 {
-
-  return 0;
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }
-uint32_t Instruction::AssembleCps(Error* err)
+void Instruction::AssembleCps(Error* err, bool query)
 {
-
-  return 0;
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }
-uint32_t Instruction::AssembleAdd(Error* err)
+void Instruction::AssembleAdd(Error* err, bool query)
 {
-
-  return 0;
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }
-uint32_t Instruction::AssembleSub(Error* err)
+void Instruction::AssembleSub(Error* err, bool query)
 {
-
-  return 0;
-}
-
-uint32_t Instruction::AssembleMul(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleDiv(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleMod(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleAnd(Error* err)
-{
-
-  return 0;
-}
-
-uint32_t Instruction::AssembleOr(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleXor(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleNot(Error* err)
-{
-
-  return 0;
-}
-uint32_t Instruction::AssembleLsl(Error* err)
-{
-
-  return 0;
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }
 
-uint32_t Instruction::AssembleLsr(Error* err)
+void Instruction::AssembleMul(Error* err, bool query)
 {
-
-  return 0;
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }
-uint32_t Instruction::AssembleJmp(Error* err)
+void Instruction::AssembleDiv(Error* err, bool query)
 {
-
-  return 0;
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }
-uint32_t Instruction::AssemblePush(Error* err)
+void Instruction::AssembleMod(Error* err, bool query)
 {
-
-  return 0;
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }
-uint32_t Instruction::AssemblePop(Error* err)
+void Instruction::AssembleAnd(Error* err, bool query)
 {
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
 
-  return 0;
+void Instruction::AssembleOr(Error* err, bool query)
+{
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
+void Instruction::AssembleXor(Error* err, bool query)
+{
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
+void Instruction::AssembleNot(Error* err, bool query)
+{
+  if (query) {
+    machine.size = WORD_BYTES;
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
+void Instruction::AssembleLsl(Error* err, bool query)
+{
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
+
+void Instruction::AssembleLsr(Error* err, bool query)
+{
+  if (query) {
+    TYPICAL_SIZE
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
+void Instruction::AssembleJmp(Error* err, bool query)
+{
+  if (query) {
+    machine.size = WORD_BYTES * 2;
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
+void Instruction::AssemblePush(Error* err, bool query)
+{
+  if (query) {
+    machine.size = WORD_BYTES;
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
+}
+void Instruction::AssemblePop(Error* err, bool query)
+{
+  if (query) {
+    machine.size = WORD_BYTES;
+  } else {
+    uint32_t code = 0;
+    code |= mnemonics[mnemonic].opcode << 2;
+    machine.setBytes(code, WORD_BYTES);
+  }
 }

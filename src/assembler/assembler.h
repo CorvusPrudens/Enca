@@ -26,18 +26,22 @@ using namespace antlr4;
 using antlrcpp::Any;
 using namespace std;
 
+#define CREATE_OP(cname, ...) \
+unique_ptr<Operand> op = make_unique<cname>(__VA_ARGS__); \
+operands.put(ctx, &op);
+
 template <typename T>
 class PtrProperty {
 
   public:
-    void put(tree::ParseTree* ctx, unique_ptr<T> ptr) {
-      properties[ctx] = move(ptr);
+    void put(tree::ParseTree* ctx, unique_ptr<T>* ptr) {
+      properties[ctx] = move(*ptr);
     }
     T* get(tree::ParseTree* ctx) {
       return properties[ctx].get();
     }
-    unique_ptr<T> getPtr(tree::ParseTree* ctx) {
-      return move(properties[ctx]);
+    unique_ptr<T>* getPtr(tree::ParseTree* ctx) {
+      return &properties[ctx];
     }
 
   unordered_map<tree::ParseTree*, unique_ptr<T>> properties;
@@ -56,7 +60,7 @@ class Assembler : public EncaBaseVisitor {
     // tree::ParseTreeProperty<Operand> operands;
     tree::ParseTreeProperty<Number> numbers;
     vector<Instruction> instructions;
-
+    vector<uint8_t> machine_code;
 
     fstream input;
     ANTLRInputStream stream;
