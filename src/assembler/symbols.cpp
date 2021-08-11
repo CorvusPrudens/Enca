@@ -51,6 +51,7 @@ void Section::AddSymbol(Symbol& sym, Error* err, ParseTree* node)
       string errmess = "section \"" + name + "\" unable to hold requested data";
       err->AddNodeErr(errmess, node);
     }
+    
   }
 }
 
