@@ -171,3 +171,46 @@ Any Assembler::visitNumOct(EncaParser::NumOctContext *ctx) {
   numbers.put(ctx, num);
   return nullptr;
 }
+
+Any Assembler::visitDataArray(EncaParser::DataArrayContext* ctx) 
+{
+  return nullptr;
+}
+Any Assembler::visitDataSingle(EncaParser::DataSingleContext* ctx) 
+{
+  int dimensions = visit(ctx->storage()).as<int>();
+  visit(ctx->number());
+
+  if (dimensions != -1 && dimensions != 1) {
+    string errmess = "invalid dimension for data without initializer list";
+    err->AddRuleErr(errmess, ctx->storage()->dimension());
+  }
+  Symbol sym = data_symbols.get(ctx->storage());
+  sym.data.push_back(numbers.get(ctx->number()).getValue());
+  symbols.AddSymbol(sym);
+
+  return nullptr;
+}
+Any Assembler::visitStorage(EncaParser::StorageContext* ctx) 
+{
+  Symbol sym(ctx->NAME()->getText());
+  if (ctx->specifier_list() != nullptr) {
+    visit(ctx->specifier_list());
+    sym.attributes = attributes.get(ctx->specifier_list());
+  }
+  data_symbols.put(ctx, sym);
+  return visit(ctx->dimension());
+}
+Any Assembler::visitDimEmpty(EncaParser::DimEmptyContext* ctx)
+{
+  return -1;
+}
+Any Assembler::visitDimNumber(EncaParser::DimNumberContext* ctx)
+{
+  visitChildren(ctx);
+  int dimensions = numbers.get(ctx->number()).getValue();
+  if (ctx->number()->getText()[0] == '-') {
+    err->AddRuleErr("negative dimensions are not permitted", ctx->number());
+  }
+  return dimensions;
+}

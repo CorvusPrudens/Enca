@@ -17,9 +17,9 @@ public class EncaParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
-		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, COMMENT=17, 
-		COMMENT_BLOCK=18, REGISTER=19, STACK=20, BASE=21, NAME=22, DEC=23, HEX=24, 
-		BIN=25, OCT=26, FLT=27, SCI=28, WHITESPACE=29;
+		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
+		COMMENT=18, COMMENT_BLOCK=19, REGISTER=20, STACK=21, BASE=22, NAME=23, 
+		DEC=24, HEX=25, BIN=26, OCT=27, FLT=28, SCI=29, WHITESPACE=30;
 	public static final int
 		RULE_parse = 0, RULE_statement = 1, RULE_instruction = 2, RULE_conditional = 3, 
 		RULE_condition = 4, RULE_label = 5, RULE_data = 6, RULE_storage = 7, RULE_dimension = 8, 
@@ -38,15 +38,15 @@ public class EncaParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, "'->'", "'zero'", "'carry'", "'negative'", "'equal'", "'greater'", 
-			"'less'", "':'", "'{'", "'}'", "'['", "']'", "'('", "','", "')'", "'&'", 
-			null, null, null, "'sp'", "'bp'"
+			"'less'", "':'", "'{'", "'}'", "'['", "']'", "'('", "','", "')'", "'='", 
+			"'&'", null, null, null, "'sp'", "'bp'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, "COMMENT", "COMMENT_BLOCK", "REGISTER", 
+			null, null, null, null, null, null, "COMMENT", "COMMENT_BLOCK", "REGISTER", 
 			"STACK", "BASE", "NAME", "DEC", "HEX", "BIN", "OCT", "FLT", "SCI", "WHITESPACE"
 		};
 	}
@@ -442,6 +442,15 @@ public class EncaParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	public static class DataArrayContext extends DataContext {
+		public StorageContext storage() {
+			return getRuleContext(StorageContext.class,0);
+		}
+		public Data_listContext data_list() {
+			return getRuleContext(Data_listContext.class,0);
+		}
+		public DataArrayContext(DataContext ctx) { copyFrom(ctx); }
+	}
 	public static class DataSingleContext extends DataContext {
 		public StorageContext storage() {
 			return getRuleContext(StorageContext.class,0);
@@ -450,15 +459,6 @@ public class EncaParser extends Parser {
 			return getRuleContext(NumberContext.class,0);
 		}
 		public DataSingleContext(DataContext ctx) { copyFrom(ctx); }
-	}
-	public static class DataArryContext extends DataContext {
-		public StorageContext storage() {
-			return getRuleContext(StorageContext.class,0);
-		}
-		public Data_listContext data_list() {
-			return getRuleContext(Data_listContext.class,0);
-		}
-		public DataArryContext(DataContext ctx) { copyFrom(ctx); }
 	}
 
 	public final DataContext data() throws RecognitionException {
@@ -469,7 +469,7 @@ public class EncaParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
-				_localctx = new DataArryContext(_localctx);
+				_localctx = new DataArrayContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(70);
@@ -685,57 +685,37 @@ public class EncaParser extends Parser {
 	}
 
 	public static class SpecifierContext extends ParserRuleContext {
+		public TerminalNode NAME() { return getToken(EncaParser.NAME, 0); }
+		public NumberContext number() {
+			return getRuleContext(NumberContext.class,0);
+		}
 		public SpecifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_specifier; }
-	 
-		public SpecifierContext() { }
-		public void copyFrom(SpecifierContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class SpecNumContext extends SpecifierContext {
-		public NumberContext number() {
-			return getRuleContext(NumberContext.class,0);
-		}
-		public SpecNumContext(SpecifierContext ctx) { copyFrom(ctx); }
-	}
-	public static class SpecNameContext extends SpecifierContext {
-		public TerminalNode NAME() { return getToken(EncaParser.NAME, 0); }
-		public SpecNameContext(SpecifierContext ctx) { copyFrom(ctx); }
 	}
 
 	public final SpecifierContext specifier() throws RecognitionException {
 		SpecifierContext _localctx = new SpecifierContext(_ctx, getState());
 		enterRule(_localctx, 20, RULE_specifier);
+		int _la;
 		try {
-			setState(109);
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(107);
+			match(NAME);
+			setState(110);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case NAME:
-				_localctx = new SpecNameContext(_localctx);
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(107);
-				match(NAME);
-				}
-				break;
-			case DEC:
-			case HEX:
-			case BIN:
-			case OCT:
-			case FLT:
-			case SCI:
-				_localctx = new SpecNumContext(_localctx);
-				enterOuterAlt(_localctx, 2);
+			_la = _input.LA(1);
+			if (_la==T__15) {
 				{
 				setState(108);
+				match(T__15);
+				setState(109);
 				number();
 				}
-				break;
-			default:
-				throw new NoViableAltException(this);
+			}
+
 			}
 		}
 		catch (RecognitionException re) {
@@ -770,32 +750,32 @@ public class EncaParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(111);
+			setState(112);
 			data_element();
-			setState(116);
+			setState(117);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,9,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					{
 					{
-					setState(112);
-					match(T__13);
 					setState(113);
+					match(T__13);
+					setState(114);
 					data_element();
 					}
 					} 
 				}
-				setState(118);
+				setState(119);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,9,_ctx);
 			}
-			setState(120);
+			setState(121);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__13) {
 				{
-				setState(119);
+				setState(120);
 				match(T__13);
 				}
 			}
@@ -841,7 +821,7 @@ public class EncaParser extends Parser {
 		Data_elementContext _localctx = new Data_elementContext(_ctx, getState());
 		enterRule(_localctx, 24, RULE_data_element);
 		try {
-			setState(124);
+			setState(125);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case DEC:
@@ -853,16 +833,16 @@ public class EncaParser extends Parser {
 				_localctx = new DataNumberContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(122);
+				setState(123);
 				number();
 				}
 				break;
-			case T__15:
+			case T__16:
 			case NAME:
 				_localctx = new DataVariableContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(123);
+				setState(124);
 				variable();
 				}
 				break;
@@ -901,21 +881,21 @@ public class EncaParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(126);
+			setState(127);
 			operand();
-			setState(131);
+			setState(132);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__13) {
 				{
 				{
-				setState(127);
-				match(T__13);
 				setState(128);
+				match(T__13);
+				setState(129);
 				operand();
 				}
 				}
-				setState(133);
+				setState(134);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -982,30 +962,30 @@ public class EncaParser extends Parser {
 		enterRule(_localctx, 28, RULE_operand);
 		int _la;
 		try {
-			setState(146);
+			setState(147);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__10:
 				_localctx = new OpRelContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(134);
-				match(T__10);
 				setState(135);
+				match(T__10);
+				setState(136);
 				operand();
-				setState(138);
+				setState(139);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==T__13) {
 					{
-					setState(136);
-					match(T__13);
 					setState(137);
+					match(T__13);
+					setState(138);
 					number();
 					}
 				}
 
-				setState(140);
+				setState(141);
 				match(T__11);
 				}
 				break;
@@ -1015,7 +995,7 @@ public class EncaParser extends Parser {
 				_localctx = new OpRegContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(142);
+				setState(143);
 				reg();
 				}
 				break;
@@ -1028,7 +1008,7 @@ public class EncaParser extends Parser {
 				_localctx = new OpNumContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(143);
+				setState(144);
 				number();
 				}
 				break;
@@ -1041,16 +1021,16 @@ public class EncaParser extends Parser {
 				_localctx = new OpCondContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(144);
+				setState(145);
 				condition();
 				}
 				break;
-			case T__15:
+			case T__16:
 			case NAME:
 				_localctx = new OpVarContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(145);
+				setState(146);
 				variable();
 				}
 				break;
@@ -1097,14 +1077,14 @@ public class EncaParser extends Parser {
 		RegContext _localctx = new RegContext(_ctx, getState());
 		enterRule(_localctx, 30, RULE_reg);
 		try {
-			setState(151);
+			setState(152);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case REGISTER:
 				_localctx = new RegStandardContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(148);
+				setState(149);
 				match(REGISTER);
 				}
 				break;
@@ -1112,7 +1092,7 @@ public class EncaParser extends Parser {
 				_localctx = new RegStackContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(149);
+				setState(150);
 				match(STACK);
 				}
 				break;
@@ -1120,7 +1100,7 @@ public class EncaParser extends Parser {
 				_localctx = new RegBaseContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(150);
+				setState(151);
 				match(BASE);
 				}
 				break;
@@ -1179,14 +1159,14 @@ public class EncaParser extends Parser {
 		NumberContext _localctx = new NumberContext(_ctx, getState());
 		enterRule(_localctx, 32, RULE_number);
 		try {
-			setState(159);
+			setState(160);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case DEC:
 				_localctx = new NumDecContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(153);
+				setState(154);
 				match(DEC);
 				}
 				break;
@@ -1194,7 +1174,7 @@ public class EncaParser extends Parser {
 				_localctx = new NumFltContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(154);
+				setState(155);
 				match(FLT);
 				}
 				break;
@@ -1202,7 +1182,7 @@ public class EncaParser extends Parser {
 				_localctx = new NumSciContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(155);
+				setState(156);
 				match(SCI);
 				}
 				break;
@@ -1210,7 +1190,7 @@ public class EncaParser extends Parser {
 				_localctx = new NumHexContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(156);
+				setState(157);
 				match(HEX);
 				}
 				break;
@@ -1218,7 +1198,7 @@ public class EncaParser extends Parser {
 				_localctx = new NumBinContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(157);
+				setState(158);
 				match(BIN);
 				}
 				break;
@@ -1226,7 +1206,7 @@ public class EncaParser extends Parser {
 				_localctx = new NumOctContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(158);
+				setState(159);
 				match(OCT);
 				}
 				break;
@@ -1259,7 +1239,7 @@ public class EncaParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(161);
+			setState(162);
 			match(NAME);
 			}
 		}
@@ -1298,24 +1278,24 @@ public class EncaParser extends Parser {
 		VariableContext _localctx = new VariableContext(_ctx, getState());
 		enterRule(_localctx, 36, RULE_variable);
 		try {
-			setState(166);
+			setState(167);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case NAME:
 				_localctx = new VarContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(163);
+				setState(164);
 				match(NAME);
 				}
 				break;
-			case T__15:
+			case T__16:
 				_localctx = new VarAddrContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(164);
-				match(T__15);
 				setState(165);
+				match(T__16);
+				setState(166);
 				match(NAME);
 				}
 				break;
@@ -1335,57 +1315,57 @@ public class EncaParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\37\u00ab\4\2\t\2"+
-		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
-		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3 \u00ac\4\2\t\2\4"+
+		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
+		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\3\2\7\2*\n\2\f\2\16\2-\13\2\3\3\3\3\3\3\5\3\62\n"+
 		"\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4?\n\4\3\5\3\5\3\5\3"+
 		"\6\3\6\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\bQ\n\b\3\t\3\t\3"+
 		"\t\5\tV\n\t\3\n\3\n\3\n\3\n\3\n\3\n\5\n^\n\n\3\13\3\13\3\13\3\13\7\13"+
-		"d\n\13\f\13\16\13g\13\13\3\13\5\13j\n\13\3\13\3\13\3\f\3\f\5\fp\n\f\3"+
-		"\r\3\r\3\r\7\ru\n\r\f\r\16\rx\13\r\3\r\5\r{\n\r\3\16\3\16\5\16\177\n\16"+
-		"\3\17\3\17\3\17\7\17\u0084\n\17\f\17\16\17\u0087\13\17\3\20\3\20\3\20"+
-		"\3\20\5\20\u008d\n\20\3\20\3\20\3\20\3\20\3\20\3\20\5\20\u0095\n\20\3"+
-		"\21\3\21\3\21\5\21\u009a\n\21\3\22\3\22\3\22\3\22\3\22\3\22\5\22\u00a2"+
-		"\n\22\3\23\3\23\3\24\3\24\3\24\5\24\u00a9\n\24\3\24\2\2\25\2\4\6\b\n\f"+
-		"\16\20\22\24\26\30\32\34\36 \"$&\2\3\3\2\4\t\2\u00b4\2+\3\2\2\2\4\61\3"+
-		"\2\2\2\6>\3\2\2\2\b@\3\2\2\2\nC\3\2\2\2\fE\3\2\2\2\16P\3\2\2\2\20R\3\2"+
-		"\2\2\22]\3\2\2\2\24_\3\2\2\2\26o\3\2\2\2\30q\3\2\2\2\32~\3\2\2\2\34\u0080"+
-		"\3\2\2\2\36\u0094\3\2\2\2 \u0099\3\2\2\2\"\u00a1\3\2\2\2$\u00a3\3\2\2"+
-		"\2&\u00a8\3\2\2\2(*\5\4\3\2)(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,\3"+
-		"\3\2\2\2-+\3\2\2\2.\62\5\6\4\2/\62\5\16\b\2\60\62\5\f\7\2\61.\3\2\2\2"+
-		"\61/\3\2\2\2\61\60\3\2\2\2\62\5\3\2\2\2\63?\5$\23\2\64\65\5$\23\2\65\66"+
-		"\5\34\17\2\66?\3\2\2\2\678\5$\23\289\5\b\5\29?\3\2\2\2:;\5$\23\2;<\5\34"+
-		"\17\2<=\5\b\5\2=?\3\2\2\2>\63\3\2\2\2>\64\3\2\2\2>\67\3\2\2\2>:\3\2\2"+
-		"\2?\7\3\2\2\2@A\7\3\2\2AB\5\n\6\2B\t\3\2\2\2CD\t\2\2\2D\13\3\2\2\2EF\7"+
-		"\30\2\2FG\7\n\2\2G\r\3\2\2\2HI\5\20\t\2IJ\7\13\2\2JK\5\30\r\2KL\7\f\2"+
-		"\2LQ\3\2\2\2MN\5\20\t\2NO\5\"\22\2OQ\3\2\2\2PH\3\2\2\2PM\3\2\2\2Q\17\3"+
-		"\2\2\2RS\7\30\2\2SU\5\22\n\2TV\5\24\13\2UT\3\2\2\2UV\3\2\2\2V\21\3\2\2"+
-		"\2WX\7\r\2\2X^\7\16\2\2YZ\7\r\2\2Z[\5\"\22\2[\\\7\16\2\2\\^\3\2\2\2]W"+
-		"\3\2\2\2]Y\3\2\2\2^\23\3\2\2\2_`\7\17\2\2`e\5\26\f\2ab\7\20\2\2bd\5\26"+
-		"\f\2ca\3\2\2\2dg\3\2\2\2ec\3\2\2\2ef\3\2\2\2fi\3\2\2\2ge\3\2\2\2hj\7\20"+
-		"\2\2ih\3\2\2\2ij\3\2\2\2jk\3\2\2\2kl\7\21\2\2l\25\3\2\2\2mp\7\30\2\2n"+
-		"p\5\"\22\2om\3\2\2\2on\3\2\2\2p\27\3\2\2\2qv\5\32\16\2rs\7\20\2\2su\5"+
-		"\32\16\2tr\3\2\2\2ux\3\2\2\2vt\3\2\2\2vw\3\2\2\2wz\3\2\2\2xv\3\2\2\2y"+
-		"{\7\20\2\2zy\3\2\2\2z{\3\2\2\2{\31\3\2\2\2|\177\5\"\22\2}\177\5&\24\2"+
-		"~|\3\2\2\2~}\3\2\2\2\177\33\3\2\2\2\u0080\u0085\5\36\20\2\u0081\u0082"+
-		"\7\20\2\2\u0082\u0084\5\36\20\2\u0083\u0081\3\2\2\2\u0084\u0087\3\2\2"+
-		"\2\u0085\u0083\3\2\2\2\u0085\u0086\3\2\2\2\u0086\35\3\2\2\2\u0087\u0085"+
-		"\3\2\2\2\u0088\u0089\7\r\2\2\u0089\u008c\5\36\20\2\u008a\u008b\7\20\2"+
-		"\2\u008b\u008d\5\"\22\2\u008c\u008a\3\2\2\2\u008c\u008d\3\2\2\2\u008d"+
-		"\u008e\3\2\2\2\u008e\u008f\7\16\2\2\u008f\u0095\3\2\2\2\u0090\u0095\5"+
-		" \21\2\u0091\u0095\5\"\22\2\u0092\u0095\5\n\6\2\u0093\u0095\5&\24\2\u0094"+
-		"\u0088\3\2\2\2\u0094\u0090\3\2\2\2\u0094\u0091\3\2\2\2\u0094\u0092\3\2"+
-		"\2\2\u0094\u0093\3\2\2\2\u0095\37\3\2\2\2\u0096\u009a\7\25\2\2\u0097\u009a"+
-		"\7\26\2\2\u0098\u009a\7\27\2\2\u0099\u0096\3\2\2\2\u0099\u0097\3\2\2\2"+
-		"\u0099\u0098\3\2\2\2\u009a!\3\2\2\2\u009b\u00a2\7\31\2\2\u009c\u00a2\7"+
-		"\35\2\2\u009d\u00a2\7\36\2\2\u009e\u00a2\7\32\2\2\u009f\u00a2\7\33\2\2"+
-		"\u00a0\u00a2\7\34\2\2\u00a1\u009b\3\2\2\2\u00a1\u009c\3\2\2\2\u00a1\u009d"+
-		"\3\2\2\2\u00a1\u009e\3\2\2\2\u00a1\u009f\3\2\2\2\u00a1\u00a0\3\2\2\2\u00a2"+
-		"#\3\2\2\2\u00a3\u00a4\7\30\2\2\u00a4%\3\2\2\2\u00a5\u00a9\7\30\2\2\u00a6"+
-		"\u00a7\7\22\2\2\u00a7\u00a9\7\30\2\2\u00a8\u00a5\3\2\2\2\u00a8\u00a6\3"+
-		"\2\2\2\u00a9\'\3\2\2\2\24+\61>PU]eiovz~\u0085\u008c\u0094\u0099\u00a1"+
-		"\u00a8";
+		"d\n\13\f\13\16\13g\13\13\3\13\5\13j\n\13\3\13\3\13\3\f\3\f\3\f\5\fq\n"+
+		"\f\3\r\3\r\3\r\7\rv\n\r\f\r\16\ry\13\r\3\r\5\r|\n\r\3\16\3\16\5\16\u0080"+
+		"\n\16\3\17\3\17\3\17\7\17\u0085\n\17\f\17\16\17\u0088\13\17\3\20\3\20"+
+		"\3\20\3\20\5\20\u008e\n\20\3\20\3\20\3\20\3\20\3\20\3\20\5\20\u0096\n"+
+		"\20\3\21\3\21\3\21\5\21\u009b\n\21\3\22\3\22\3\22\3\22\3\22\3\22\5\22"+
+		"\u00a3\n\22\3\23\3\23\3\24\3\24\3\24\5\24\u00aa\n\24\3\24\2\2\25\2\4\6"+
+		"\b\n\f\16\20\22\24\26\30\32\34\36 \"$&\2\3\3\2\4\t\2\u00b5\2+\3\2\2\2"+
+		"\4\61\3\2\2\2\6>\3\2\2\2\b@\3\2\2\2\nC\3\2\2\2\fE\3\2\2\2\16P\3\2\2\2"+
+		"\20R\3\2\2\2\22]\3\2\2\2\24_\3\2\2\2\26m\3\2\2\2\30r\3\2\2\2\32\177\3"+
+		"\2\2\2\34\u0081\3\2\2\2\36\u0095\3\2\2\2 \u009a\3\2\2\2\"\u00a2\3\2\2"+
+		"\2$\u00a4\3\2\2\2&\u00a9\3\2\2\2(*\5\4\3\2)(\3\2\2\2*-\3\2\2\2+)\3\2\2"+
+		"\2+,\3\2\2\2,\3\3\2\2\2-+\3\2\2\2.\62\5\6\4\2/\62\5\16\b\2\60\62\5\f\7"+
+		"\2\61.\3\2\2\2\61/\3\2\2\2\61\60\3\2\2\2\62\5\3\2\2\2\63?\5$\23\2\64\65"+
+		"\5$\23\2\65\66\5\34\17\2\66?\3\2\2\2\678\5$\23\289\5\b\5\29?\3\2\2\2:"+
+		";\5$\23\2;<\5\34\17\2<=\5\b\5\2=?\3\2\2\2>\63\3\2\2\2>\64\3\2\2\2>\67"+
+		"\3\2\2\2>:\3\2\2\2?\7\3\2\2\2@A\7\3\2\2AB\5\n\6\2B\t\3\2\2\2CD\t\2\2\2"+
+		"D\13\3\2\2\2EF\7\31\2\2FG\7\n\2\2G\r\3\2\2\2HI\5\20\t\2IJ\7\13\2\2JK\5"+
+		"\30\r\2KL\7\f\2\2LQ\3\2\2\2MN\5\20\t\2NO\5\"\22\2OQ\3\2\2\2PH\3\2\2\2"+
+		"PM\3\2\2\2Q\17\3\2\2\2RS\7\31\2\2SU\5\22\n\2TV\5\24\13\2UT\3\2\2\2UV\3"+
+		"\2\2\2V\21\3\2\2\2WX\7\r\2\2X^\7\16\2\2YZ\7\r\2\2Z[\5\"\22\2[\\\7\16\2"+
+		"\2\\^\3\2\2\2]W\3\2\2\2]Y\3\2\2\2^\23\3\2\2\2_`\7\17\2\2`e\5\26\f\2ab"+
+		"\7\20\2\2bd\5\26\f\2ca\3\2\2\2dg\3\2\2\2ec\3\2\2\2ef\3\2\2\2fi\3\2\2\2"+
+		"ge\3\2\2\2hj\7\20\2\2ih\3\2\2\2ij\3\2\2\2jk\3\2\2\2kl\7\21\2\2l\25\3\2"+
+		"\2\2mp\7\31\2\2no\7\22\2\2oq\5\"\22\2pn\3\2\2\2pq\3\2\2\2q\27\3\2\2\2"+
+		"rw\5\32\16\2st\7\20\2\2tv\5\32\16\2us\3\2\2\2vy\3\2\2\2wu\3\2\2\2wx\3"+
+		"\2\2\2x{\3\2\2\2yw\3\2\2\2z|\7\20\2\2{z\3\2\2\2{|\3\2\2\2|\31\3\2\2\2"+
+		"}\u0080\5\"\22\2~\u0080\5&\24\2\177}\3\2\2\2\177~\3\2\2\2\u0080\33\3\2"+
+		"\2\2\u0081\u0086\5\36\20\2\u0082\u0083\7\20\2\2\u0083\u0085\5\36\20\2"+
+		"\u0084\u0082\3\2\2\2\u0085\u0088\3\2\2\2\u0086\u0084\3\2\2\2\u0086\u0087"+
+		"\3\2\2\2\u0087\35\3\2\2\2\u0088\u0086\3\2\2\2\u0089\u008a\7\r\2\2\u008a"+
+		"\u008d\5\36\20\2\u008b\u008c\7\20\2\2\u008c\u008e\5\"\22\2\u008d\u008b"+
+		"\3\2\2\2\u008d\u008e\3\2\2\2\u008e\u008f\3\2\2\2\u008f\u0090\7\16\2\2"+
+		"\u0090\u0096\3\2\2\2\u0091\u0096\5 \21\2\u0092\u0096\5\"\22\2\u0093\u0096"+
+		"\5\n\6\2\u0094\u0096\5&\24\2\u0095\u0089\3\2\2\2\u0095\u0091\3\2\2\2\u0095"+
+		"\u0092\3\2\2\2\u0095\u0093\3\2\2\2\u0095\u0094\3\2\2\2\u0096\37\3\2\2"+
+		"\2\u0097\u009b\7\26\2\2\u0098\u009b\7\27\2\2\u0099\u009b\7\30\2\2\u009a"+
+		"\u0097\3\2\2\2\u009a\u0098\3\2\2\2\u009a\u0099\3\2\2\2\u009b!\3\2\2\2"+
+		"\u009c\u00a3\7\32\2\2\u009d\u00a3\7\36\2\2\u009e\u00a3\7\37\2\2\u009f"+
+		"\u00a3\7\33\2\2\u00a0\u00a3\7\34\2\2\u00a1\u00a3\7\35\2\2\u00a2\u009c"+
+		"\3\2\2\2\u00a2\u009d\3\2\2\2\u00a2\u009e\3\2\2\2\u00a2\u009f\3\2\2\2\u00a2"+
+		"\u00a0\3\2\2\2\u00a2\u00a1\3\2\2\2\u00a3#\3\2\2\2\u00a4\u00a5\7\31\2\2"+
+		"\u00a5%\3\2\2\2\u00a6\u00aa\7\31\2\2\u00a7\u00a8\7\23\2\2\u00a8\u00aa"+
+		"\7\31\2\2\u00a9\u00a6\3\2\2\2\u00a9\u00a7\3\2\2\2\u00aa\'\3\2\2\2\24+"+
+		"\61>PU]eipw{\177\u0086\u008d\u0095\u009a\u00a2\u00a9";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

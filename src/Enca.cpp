@@ -28,9 +28,8 @@ int main(int argc, const char* argv[])
   for (auto& inst : enca.instructions) {
     cout << inst.mnemonic << "\n";
   }
-  for (auto& pair : enca.symbols.symbols)
-  {
-    cout << pair.first << " " << pair.second.index << "\n";
+  for (auto symbol : enca.symbols.ordered) {
+    cout << symbol->name << " " << symbol->index << "\n";
   }
 
   cout << "\n";

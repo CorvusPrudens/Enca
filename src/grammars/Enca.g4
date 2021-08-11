@@ -26,7 +26,7 @@ condition   : 'zero'
 label       : NAME ':';
 
 // a bit annoying to specify newlines, but it's only for this so...
-data        : storage  '{'  data_list  '}' # dataArry
+data        : storage  '{'  data_list  '}' # dataArray
             | storage number               # dataSingle
             ;
 
@@ -38,10 +38,7 @@ dimension   : '[' ']'        # dimEmpty
 
 specifier_list : '(' specifier (',' specifier)* ','? ')';
 
-specifier   : NAME   # specName
-            | number # specNum
-            ;
-
+specifier   : NAME ('=' number)?;
 
 data_list   : data_element  (','  data_element )* ','?;
 

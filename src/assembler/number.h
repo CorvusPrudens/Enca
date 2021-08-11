@@ -22,8 +22,8 @@ class Number {
       type = t;
     }
 
-    uint16_t getValue() {
-      uint16_t* ptr = (uint16_t*) value;
+    int getValue() {
+      int* ptr = (int*) value;
       return *ptr;
     }
 

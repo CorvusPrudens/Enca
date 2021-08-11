@@ -47,6 +47,13 @@ class PtrProperty {
   unordered_map<tree::ParseTree*, unique_ptr<T>> properties;
 };
 
+struct Kwarg {
+  Kwarg() {}
+  Kwarg(string n, int v) { name = n; value = v; }
+  string name;
+  int value;
+};
+
 class Assembler : public EncaBaseVisitor {
 
   public:
@@ -59,6 +66,8 @@ class Assembler : public EncaBaseVisitor {
     // unordered_map<tree::ParseTree*, unique_ptr<Operand>> operands;
     // tree::ParseTreeProperty<Operand> operands;
     tree::ParseTreeProperty<Number> numbers;
+    tree::ParseTreeProperty<Symbol> data_symbols;
+    tree::ParseTreeProperty<unordered_map<string, int>> attributes;
     vector<Instruction> instructions;
     vector<uint8_t> machine_code;
 
@@ -89,6 +98,13 @@ class Assembler : public EncaBaseVisitor {
     Any visitNumOct(EncaParser::NumOctContext *ctx) override;
 
     Any visitStatLab(EncaParser::StatLabContext* ctx) override;
+
+    Any visitDataArray(EncaParser::DataArrayContext* ctx) override;
+    Any visitDataSingle(EncaParser::DataSingleContext* ctx) override;
+
+    Any visitStorage(EncaParser::StorageContext* ctx) override;
+    Any visitDimEmpty(EncaParser::DimEmptyContext* ctx) override;
+    Any visitDimNumber(EncaParser::DimNumberContext* ctx) override;
 
 };
 

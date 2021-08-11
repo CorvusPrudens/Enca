@@ -8,6 +8,7 @@
 
 using std::string;
 
+
 string get_line(string filename, int line)
 {
   std::ifstream file(filename);
@@ -41,20 +42,27 @@ void Error::AddWarning(string message, int line, string file, int code, int cols
   warnings.push_back(w);
 }
 
-void Error::AddRuleErr(string message, antlr4::ParserRuleContext* rule)
+// TODO -- add detection for rules spanning multiple lines!
+void Error::AddNodeErr(string message, ParseTree* node)
 {
-  int line = rule->start->getLine();
-  int cols = rule->start->getCharPositionInLine();
-  int cole = cols + rule->stop->getStopIndex() - rule->start->getStartIndex();
+  auto start = node->getSourceInterval().a;
+  auto end = node->getSourceInterval().b;
+
+  int line = tokens->get(start)->getLine();
+  int cols = tokens->get(start)->getCharPositionInLine();
+  int cole = cols + tokens->get(end)->getStopIndex() - tokens->get(start)->getStartIndex();
   string file = filepath;
   AddError(message, line, file, 1, cols, cole);
 }
 
-void Error::AddRuleWarn(string message, antlr4::ParserRuleContext* rule)
+void Error::AddNodeWarn(string message, ParseTree* node)
 {
-  int line = rule->start->getLine();
-  int cols = rule->start->getCharPositionInLine();
-  int cole = cols + rule->stop->getStopIndex() - rule->start->getStartIndex();
+  auto start = node->getSourceInterval().a;
+  auto end = node->getSourceInterval().b;
+  
+  int line = tokens->get(start)->getLine();
+  int cols = tokens->get(start)->getCharPositionInLine();
+  int cole = cols + tokens->get(end)->getStopIndex() - tokens->get(start)->getStartIndex();
   string file = filepath;
   AddWarning(message, line, file, 1, cols, cole);
 }

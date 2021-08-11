@@ -8,11 +8,12 @@
 #include "antlr4-runtime.h"
 
 using std::string;
+using antlr4::tree::ParseTree;
 
 class Error {
 
   public:
-    Error(string file) { filepath = file; }
+    Error(string file, antlr4::CommonTokenStream* tok) { filepath = file; tokens = tok; }
     ~Error() {}
 
     struct item {
@@ -36,8 +37,8 @@ class Error {
       int colstart = -1, int colend = -1
     );
 
-    void AddRuleErr(string message, antlr4::ParserRuleContext* ctx);
-    void AddRuleWarn(string message, antlr4::ParserRuleContext* ctx);
+    void AddNodeErr(string message, ParseTree* node);
+    void AddNodeWarn(string message, ParseTree* node);
 
     void Report();
 
@@ -50,6 +51,7 @@ class Error {
     std::vector<item> errors;
     std::vector<item> warnings;
     string filepath;
+    antlr4::CommonTokenStream* tokens;
 
 };
 
