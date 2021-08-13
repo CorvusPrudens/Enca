@@ -42,10 +42,10 @@ Machine& Instruction::Assemble(Error* err)
     try { 
       (this->*methods[mnemonic])(err, false); 
     } catch (int e) { 
-      err->AddRuleErr("malformed arguments", ctx); 
+      err->AddNodeErr("malformed arguments", ctx); 
     } 
   } else { 
-    err->AddRuleErr("unexpected mnemonic \"" + mnemonic + "\"", ctx); 
+    err->AddNodeErr("unexpected mnemonic \"" + mnemonic + "\"", ctx); 
   } 
   return machine;
 }
@@ -66,7 +66,7 @@ void Instruction::AssembleLdr(Error* err, bool query)
     machine.size = WORD_BYTES * 2;
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -77,7 +77,7 @@ void Instruction::AssembleStr(Error* err, bool query)
     machine.size = WORD_BYTES * 2;
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -88,7 +88,7 @@ void Instruction::AssembleMov(Error* err, bool query)
     machine.size = WORD_BYTES;
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -113,7 +113,7 @@ void Instruction::AssembleCmp(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -123,7 +123,7 @@ void Instruction::AssembleCps(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -133,7 +133,7 @@ void Instruction::AssembleAdd(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -143,7 +143,7 @@ void Instruction::AssembleSub(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -154,7 +154,7 @@ void Instruction::AssembleMul(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -164,7 +164,7 @@ void Instruction::AssembleDiv(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -174,7 +174,7 @@ void Instruction::AssembleMod(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -184,7 +184,7 @@ void Instruction::AssembleAnd(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -195,7 +195,7 @@ void Instruction::AssembleOr(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -205,7 +205,7 @@ void Instruction::AssembleXor(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -215,7 +215,7 @@ void Instruction::AssembleNot(Error* err, bool query)
     machine.size = WORD_BYTES;
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -225,7 +225,7 @@ void Instruction::AssembleLsl(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -236,7 +236,7 @@ void Instruction::AssembleLsr(Error* err, bool query)
     TYPICAL_SIZE
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -246,7 +246,7 @@ void Instruction::AssembleJmp(Error* err, bool query)
     machine.size = WORD_BYTES * 2;
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -256,7 +256,7 @@ void Instruction::AssemblePush(Error* err, bool query)
     machine.size = WORD_BYTES;
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }
@@ -266,7 +266,7 @@ void Instruction::AssemblePop(Error* err, bool query)
     machine.size = WORD_BYTES;
   } else {
     uint32_t code = 0;
-    code |= mnemonics[mnemonic].opcode << 2;
+    code |= mnemonics[mnemonic].opcode;
     machine.setBytes(code, WORD_BYTES);
   }
 }

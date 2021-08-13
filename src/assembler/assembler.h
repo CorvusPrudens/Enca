@@ -15,7 +15,6 @@
 #include "EncaBaseVisitor.h"
 #include "EncaBaseListener.h"
 
-#include "utils.h"
 #include "error.h"
 #include "operand.h"
 #include "number.h"
@@ -57,16 +56,17 @@ struct Kwarg {
 class Assembler : public EncaBaseVisitor {
 
   public:
-    Assembler(string file_, Error* err_);
+    Assembler(string file_);
     ~Assembler() {}
 
-    Error* err;
+    
     SymbolTable symbols;
     PtrProperty<Operand> operands;
     // unordered_map<tree::ParseTree*, unique_ptr<Operand>> operands;
     // tree::ParseTreeProperty<Operand> operands;
     tree::ParseTreeProperty<Number> numbers;
     tree::ParseTreeProperty<Symbol> data_symbols;
+    tree::ParseTreeProperty<Value> values;
     tree::ParseTreeProperty<unordered_map<string, int>> attributes;
     vector<Instruction> instructions;
     vector<uint8_t> machine_code;
@@ -76,6 +76,7 @@ class Assembler : public EncaBaseVisitor {
     EncaLexer lexer;
     EncaParser parser;
     CommonTokenStream tokens;
+    Error err;
 
     void Complete();
 
@@ -105,6 +106,12 @@ class Assembler : public EncaBaseVisitor {
     Any visitStorage(EncaParser::StorageContext* ctx) override;
     Any visitDimEmpty(EncaParser::DimEmptyContext* ctx) override;
     Any visitDimNumber(EncaParser::DimNumberContext* ctx) override;
+
+    Any visitVar(EncaParser::VarContext* ctx) override;
+    Any visitVarAddr(EncaParser::VarAddrContext* ctx) override;
+
+    Any visitDataNumber(EncaParser::DataNumberContext* ctx) override;
+    Any visitDataVariable(EncaParser::DataVariableContext* ctx) override;
 
 };
 

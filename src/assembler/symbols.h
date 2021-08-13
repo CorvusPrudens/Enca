@@ -12,6 +12,38 @@
 using namespace std;
 using antlr4::tree::ParseTree;
 
+typedef unordered_map<string, int> Attributes;
+class SymbolTable; // forward decl
+
+struct Reference {
+
+  Reference() {}
+  Reference(string n) { name = n; }
+
+  int GetValue(SymbolTable& symbols);
+
+  string name;
+  bool isAddress;
+};
+
+struct Value {
+
+  enum Type {
+    NUMBER = 0,
+    REFERENCE,
+  };
+
+  Value() {}
+  Value(int v) { value = v; type = NUMBER; }
+  Value(Reference r) { reference = r; type = REFERENCE; }
+
+  int GetValue(SymbolTable& symbols);
+
+  Type type;
+  int value;
+  Reference reference;
+};
+
 class Symbol {
 
   public:
@@ -23,8 +55,8 @@ class Symbol {
 
     string name;
     int address;
-    unordered_map<string, int> attributes;
-    vector<int> data;
+    Attributes attributes;
+    vector<Value> data;
     size_t index;
     bool isLabel;
 };
@@ -45,6 +77,7 @@ class Section {
 
   public:
 
+    Section() {}
     Section(string n, size_t s, size_t e) { 
       name = n; 
       start = s;
@@ -52,9 +85,18 @@ class Section {
     }
     ~Section() {}
 
-    void AddSymbol(Symbol& sym, Error* err, ParseTree* ctx);
-    bool ValidRange(size_t s, size_t e, Symbol& sym, Error* err, ParseTree* ctx);
+    void AddSymbol(Symbol& sym, Error* err, ParseTree* node);
+    bool ValidRange(size_t s, size_t e, Symbol& sym, Error* err, ParseTree* node);
     vector<uint8_t>& GetData();
+    void Push(SymbolRange& sr);
+
+    inline static Attributes data_attributes = {
+      {"ram", -1}, // section
+      {"rom", -1}, // section
+      {"flash", -1}, // section
+      {"address", -1},
+      {"align", 1},
+    };
 
     string name;
     list<SymbolRange> symbols;
@@ -71,7 +113,7 @@ class SymbolTable {
     SymbolTable() {}
     ~SymbolTable() {}
 
-    void AddSymbol(Symbol& s, Error* err, ParseTree* ctx);
+    void AddSymbol(Symbol& s, Error* err, ParseTree* node);
     Symbol& GetSymbol(string name);
 
     inline static unordered_map<string, Section> sections = {

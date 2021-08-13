@@ -26,8 +26,8 @@ condition   : 'zero'
 label       : NAME ':';
 
 // a bit annoying to specify newlines, but it's only for this so...
-data        : storage  '{'  data_list  '}' # dataArray
-            | storage number               # dataSingle
+data        : storage  '{'  data_list?  '}' # dataArray
+            | storage data_element         # dataSingle
             ;
 
 storage     : NAME dimension specifier_list?;
@@ -68,10 +68,10 @@ number      : DEC # numDec
             | OCT # numOct
             ;
 
-mnemonic    : NAME;
+mnemonic    : MNEMONIC;
 
 variable    : NAME     # var
-            | '&' NAME # varAddr
+            | AMP NAME # varAddr
             ;
 
 // lexer
@@ -84,19 +84,28 @@ REGISTER      : 'r' ([1-9][0-9_]* | '0');
 STACK         : 'sp';
 BASE          : 'bp';
 
+MNEMONIC      : 'nop' | 'ldr' | 'str' | 'cmp'
+              | 'cps' | 'add' | 'sub' | 'mul'
+              | 'div' | 'mod' | 'and' | 'or'
+              | 'xor' | 'not' | 'lsl' | 'lsr'
+              | 'jmp' | 'push'| 'pop'
+              ;
+
 NAME          : [a-zA-Z_][a-zA-Z_0-9]*;
 
-DEC           : [1-9][0-9_]* | '0';
-HEX           : '0x'[0-9A-Fa-f][0-9A-Fa-f_]*;
-BIN           : '0b'[0-1][0-1_]*;
-OCT           : '0'[0-7]+;
-FLT           : ([1-9][0-9_]* | '0') '.' ([1-9][0-9_]* | '0');
+DEC           : '-'? [1-9][0-9_]* | '0';
+HEX           : '-'? '0x'[0-9A-Fa-f][0-9A-Fa-f_]*;
+BIN           : '-'? '0b'[0-1][0-1_]*;
+OCT           : '-'? '0'[0-7]+;
+FLT           : '-'? ([1-9][0-9_]* | '0') '.' ([1-9][0-9_]* | '0');
+
+AMP           : '&';
 
 fragment FD   : ([1-9][0-9]* | '0') '.'?
               | ([1-9][0-9]* | '0') '.' ([1-9][0-9]* | '0')
               | '.' ([1-9][0-9]* | '0')
               ;
 
-SCI           : FD 'e' '-'? [0-9]+;
+SCI           : '-'? FD 'e' '-'? [0-9]+;
 
 WHITESPACE    : [ \t\n\r] -> channel(HIDDEN);

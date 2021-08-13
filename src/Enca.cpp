@@ -5,6 +5,7 @@
 #include "CLI.hpp"
 #include "assembler.h"
 #include "error.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -22,20 +23,28 @@ int main(int argc, const char* argv[])
 
   CLI11_PARSE(app, argc, argv);
 
-  Error err(filename);
-  Assembler enca(filename, &err);
+  Assembler enca(filename);
 
   for (auto& inst : enca.instructions) {
     cout << inst.mnemonic << "\n";
   }
   for (auto symbol : enca.symbols.ordered) {
-    cout << symbol->name << " " << symbol->index << "\n";
+    cout << symbol->name << " " << symbol->address << "\n";
   }
 
   cout << "\n";
 
-  for (auto byte : enca.machine_code) {
-    cout << to_string(byte) << "\n";
+  // for (auto byte : enca.machine_code) {
+  //   cout << to_string(byte) << "\n";
+  // }
+  // for (auto& inst : enca.instructions) {
+  //   for (int i = inst.machine.bytes.size() - 1; i > -1; i--) {
+  //     cout << to_string(inst.machine.bytes[i]) << " ";
+  //   }
+  //   cout << "\n";
+  // }
+  for (auto& inst : enca.instructions) {
+    cout << formatInstruction(inst.machine.bytes) + "\n";
   }
 
   enca.Complete();

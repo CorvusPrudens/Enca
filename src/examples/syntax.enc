@@ -1,5 +1,5 @@
 
-data1[] (flash, address=0x2000, align, bytes=2) {
+data1[] (flash, address=0x2000, align=4, bytes=2) {
   0x4142, 0xABAB, 0x5A5A, 0xDEAD, 0xBEEF, &data2,
 }
 

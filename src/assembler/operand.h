@@ -126,7 +126,7 @@ class VariableOp : public Operand {
   
   public:
 
-    VariableOp(string n, SymbolTable* t) { name = n; table = t; }
+    VariableOp(string n, SymbolTable* t, bool addr) { name = n; table = t; isAddress = addr; }
     ~VariableOp() {}
 
     Class getClass() override { return Class::NAME; }
@@ -136,6 +136,7 @@ class VariableOp : public Operand {
 
     string name;
     SymbolTable* table;
+    bool isAddress;
 };
 
 #endif

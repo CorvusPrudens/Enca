@@ -7,9 +7,13 @@
 #include <sstream>
 #include <fstream>
 
+#include <iomanip>
 #include <list>
 #include <vector>
 #include <unordered_map>
+
+#include "instruction.h"
+#include "operand.h"
 
 using std::string;
 using std::cout;
@@ -165,5 +169,10 @@ bool EqualVectors(std::vector<T> v1, std::vector<T> v2)
   }
   return true;
 }
+
+string hex(int value);
+string getMnemonic(int code);
+string getRegister(int reg);
+string formatInstruction(std::vector<uint8_t> machine, bool annotated = false);
 
 #endif // UTILS_H

@@ -1,6 +1,27 @@
 
 #include "symbols.h"
 
+int Reference::GetValue(SymbolTable& symbols)
+{
+  // for now, it'll just get the address
+  if (isAddress) {
+    return symbols.GetSymbol(name).address;
+  } else {
+    throw 1;
+  }
+}
+
+int Value::GetValue(SymbolTable& symbols)
+{
+  if (type == NUMBER) {
+    return value;
+  }
+  else 
+  {
+    return reference.GetValue(symbols);
+  }
+}
+
 Symbol::Symbol(string n)
 {
   name = n;
@@ -17,41 +38,122 @@ Symbol::Symbol(string n, size_t idx)
   index = idx;
 }
 
-// TODO -- need to add align checks, specified addresses, and such!!
-void Section::AddSymbol(Symbol& sym, Error* err, ParseTree* node)
+void GatherAttributes(Attributes& to, Attributes& from)
 {
-  SymbolRange sr(&sym);
-  if (symbols.size() == 0) 
-  {
-    sr.start = start;
-    sr.end = sr.start + sym.data.size();
+  for (auto& pair : to) {
+    if (from.count(pair.first) > 0)
+      pair.second = from[pair.first];
+  }
+}
 
-    if (sr.end > end) {
-      err->AddNodeErr("data \"" + sr.symbol->name + "\" too large for section \"" + name + "\"", node);
-    } else {
-      symbols.push_back(sr);
+size_t align(size_t input, size_t alignment) {
+  if (input % alignment > 0) {
+    return input + alignment - (input % alignment);
+  } else {
+    return input;
+  }
+}
+
+void VerifyAttributes(Attributes& check, Error* err, ParseTree* node)
+{
+  bool section = false;
+  for (auto& pair : check) 
+  {
+    if (SymbolTable::sections.count(pair.first) > 0) {
+      if (section == true) {
+        string errmess = "data cannot specify more than one memory section";
+        err->AddNodeErr(errmess, node);
+      }
+      section = true;
+    }
+    else if (Section::data_attributes.count(pair.first) > 0) 
+    {
+      if (pair.first == "align" && pair.second == 0) 
+      {
+        string errmess = "data alignment of 0 is invalid";
+        err->AddNodeErr(errmess, node);
+        pair.second = 1;
+      }
+    }
+    else 
+    {
+      string errmess = "unknown attribute \"" + pair.first + "\"";
+      err->AddNodeErr(errmess, node);
     }
   }
-  else
+}
+
+void Section::Push(SymbolRange& sr) 
+{
+  sr.symbol->address = sr.start;
+  symbols.push_back(sr);
+}
+
+// TODO -- this is a horrible mess and you should feel bad for making it
+void Section::AddSymbol(Symbol& sym, Error* err, ParseTree* node)
+{
+  
+  Attributes attr = data_attributes;
+  GatherAttributes(attr, sym.attributes);
+  SymbolRange sr(&sym);
+
+  if (attr["address"] == -1) 
   {
-    
-    bool found = false;
-    for (auto& sr : symbols) {
-      size_t temp_start = sr.end;
+    if (symbols.size() == 0) 
+    {
+      sr.start = align(start, attr["align"]);
+      sr.end = sr.start + sym.data.size();
+
+      if (sr.end > end) {
+        err->AddNodeErr("data \"" + sr.symbol->name + "\" too large for section \"" + name + "\"", node);
+      } else {
+        Push(sr);
+      }
+    }
+    else
+    {
+      // TODO -- it's possible that the data could become fragmented if a large, aligned
+      // array follows a shorter, specified value
+      bool found = false;
+
+      size_t temp_start = align(start, attr["align"]);
       size_t temp_end = temp_start + sym.data.size();
       if (ValidRange(temp_start, temp_end, sym, err, node))
       {
         found = true;
         SymbolRange fsr(&sym, temp_start, temp_end);
-        symbols.push_back(fsr);
-        break;
+        Push(fsr);
       }
+      if (!found) {
+        for (auto& sr : symbols) {
+          temp_start = align(sr.end, attr["align"]);
+          temp_end = temp_start + sym.data.size();
+          if (ValidRange(temp_start, temp_end, sym, err, node))
+          {
+            found = true;
+            SymbolRange fsr(&sym, temp_start, temp_end);
+            Push(fsr);
+            break;
+          }
+        }
+      }
+      if (!found) {
+        string errmess = "section \"" + name + "\" unable to hold requested data";
+        err->AddNodeErr(errmess, node);
+      }
+
     }
-    if (!found) {
-      string errmess = "section \"" + name + "\" unable to hold requested data";
-      err->AddNodeErr(errmess, node);
+  }
+  else // if the address is specified...
+  {
+    sr.start = align(attr["address"], attr["align"]);
+    sr.end = sr.start + sym.data.size();
+
+    if (ValidRange(sr.start, sr.end, sym, err, node))
+    {
+      SymbolRange fsr(&sym, sr.start, sr.end);
+      Push(sr);
     }
-    
   }
 }
 
@@ -66,7 +168,7 @@ bool Section::ValidRange(size_t s, size_t e, Symbol& sym, Error* err, ParseTree*
     return false;
   }
   for (auto& sr : symbols) {
-    if ((s > sr.start && s < sr.end) || (e > sr.start && e < sr.end))
+    if ((s >= sr.start && s < sr.end) || (e >= sr.start && e < sr.end))
       return false;
   }
   return true;
@@ -88,7 +190,9 @@ void SymbolTable::AddSymbol(Symbol& s, Error* err, ParseTree* node)
     symbols[s.name] = s;
     ordered.push_back(&symbols[s.name]);
 
-    sections[section].AddSymbol(symbols[s.name], err, node);
+    if (!s.isLabel) {
+      sections[section].AddSymbol(symbols[s.name], err, node);
+    }
 
   } 
   else 
