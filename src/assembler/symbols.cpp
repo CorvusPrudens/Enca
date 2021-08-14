@@ -1,5 +1,8 @@
+#include <iostream>
+#include <fstream>
 
 #include "symbols.h"
+
 
 int Reference::GetValue(SymbolTable& symbols)
 {
@@ -174,6 +177,14 @@ bool Section::ValidRange(size_t s, size_t e, Symbol& sym, Error* err, ParseTree*
   return true;
 }
 
+// how to deal with word size?
+vector<uint8_t>& Section::GetData()
+{
+  for (int i = start; i < end; i++) {
+    
+  }
+}
+
 void SymbolTable::AddSymbol(Symbol& s, Error* err, ParseTree* node)
 {
   if (symbols.count(s.name) == 0) 
@@ -210,5 +221,17 @@ Symbol& SymbolTable::GetSymbol(string name)
   else 
   {
     return symbols[name];
+  }
+}
+
+void SymbolTable::WriteFiles(string prefix)
+{
+  for (auto& pair : sections) {
+    auto& data = pair.second.GetData();
+    ofstream outfile(prefix + "_" + pair.first + ".bin", ios::out | ios::binary);
+    for (auto value : data) {
+      outfile << value;
+    }
+    outfile.close();
   }
 }

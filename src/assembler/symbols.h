@@ -116,6 +116,9 @@ class SymbolTable {
     void AddSymbol(Symbol& s, Error* err, ParseTree* node);
     Symbol& GetSymbol(string name);
 
+    // I'm sure we'll add options later
+    void WriteFiles(string prefix);
+
     inline static unordered_map<string, Section> sections = {
       {"ram", Section("ram", 65, 1792)}, // 256 words reserved for stack
       {"rom", Section("rom", 0, 0x10000)},

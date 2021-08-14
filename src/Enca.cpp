@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 
 #include "CLI.hpp"
@@ -14,12 +15,20 @@ int main(int argc, const char* argv[])
 
   CLI::App app{"Assembler for the Corvus chip architecture."};
 
-  std::string filename;
+  string filename;
   app.add_option("file", filename, "File name")
     ->required()
     ->check(CLI::ExistingFile);
-  // bool graph = false;
-  // app.add_flag("--graph", graph, "Enable function call graphing");
+
+  string outname = "out";
+  app.add_option("-o", outname, "Output binary prefix")
+    ->default_str("out");
+
+  bool no_output = false;
+  app.add_flag("--no-output", no_output, "Disable the creation of output binaries");
+
+  bool debug = false;
+  app.add_flag("--debug", debug, "Enable debug mode");
 
   CLI11_PARSE(app, argc, argv);
 
@@ -34,22 +43,24 @@ int main(int argc, const char* argv[])
 
   cout << "\n";
 
-  // for (auto byte : enca.machine_code) {
-  //   cout << to_string(byte) << "\n";
-  // }
-  // for (auto& inst : enca.instructions) {
-  //   for (int i = inst.machine.bytes.size() - 1; i > -1; i--) {
-  //     cout << to_string(inst.machine.bytes[i]) << " ";
-  //   }
-  //   cout << "\n";
-  // }
   enca.Complete();
   
-  for (auto& inst : enca.instructions) {
-    cout << formatInstruction(inst.machine.bytes) + "\n";
+  if (debug) 
+  {
+    for (auto& inst : enca.instructions) {
+      cout << formatInstruction(inst.machine.bytes) + "\n";
+    }
   }
 
-  
+  if (!no_output) 
+  {
+    ofstream outfile(outname + ".bin", ios::out | ios::binary);
+    for (auto item : enca.machine_code) {
+      outfile << item;
+    }
+    outfile.close();
+    enca.symbols.WriteFiles(outname);
+  }
 
   return 0;
 }
