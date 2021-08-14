@@ -7,3 +7,5 @@
 - We'll need a simple expression system (imagine stuff like static structs!)
 
 - It would be nice to be able to get more specific error reports for operands
+
+- Conditional instructions need to be added

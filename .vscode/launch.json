@@ -10,7 +10,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/src/build/enca",
-      "args": ["${workspaceFolder}/src/examples/tests/instructions/load_register.enc"],
+      "args": ["${workspaceFolder}/src/examples/tests/instructions.enc"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
       "environment": [],

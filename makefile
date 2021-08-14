@@ -15,7 +15,7 @@ CLASSP = -classpath .:../../../../$(ANTLR_JAR)
 
 GRUN = java ${CLASSP} org.antlr.v4.gui.TestRig
 
-EXAMPLE = tests/instructions/load_register.enc
+EXAMPLE = tests/instructions.enc
 EXAMPLE_PATH = $(SRC)/examples/$(EXAMPLE)
 
 all: build_assembler

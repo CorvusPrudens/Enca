@@ -92,6 +92,7 @@ Any Assembler::visitOpReg(EncaParser::OpRegContext* ctx)
 
 Any Assembler::visitOpNum(EncaParser::OpNumContext* ctx)
 {
+  visit(ctx->number());
   CREATE_OP(NumberOp, numbers.get(ctx->number()))
   return nullptr;
 }
@@ -121,6 +122,12 @@ Any Assembler::visitOpRel(EncaParser::OpRelContext* ctx)
   }
   op->setRelative(offset);
   operands.put(ctx, operands.getPtr(ctx->operand()));
+  return nullptr;
+}
+
+Any Assembler::visitConditional(EncaParser::ConditionalContext* ctx)
+{
+  CREATE_OP(ConditionOp, ctx->condition()->getText())
   return nullptr;
 }
 

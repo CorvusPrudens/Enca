@@ -154,6 +154,13 @@ string formatInstruction(std::vector<uint8_t> machine, bool annotated)
   int pos = 8 * machine.size() - 1;
   
   if (pos > 16) {
+    out_2a = "-----------------\n";
+    for ( ; pos > 23; pos--) {
+      out_2a += std::to_string(c[pos]);
+      out_2b += "i";
+    }
+    out_2a += " ";
+    out_2b += " ";
     for ( ; pos > 15; pos--) {
       out_2a += std::to_string(c[pos]);
       out_2b += "i";

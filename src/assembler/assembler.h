@@ -91,6 +91,8 @@ class Assembler : public EncaBaseVisitor {
     Any visitOpVar(EncaParser::OpVarContext* ctx) override;
     Any visitOpRel(EncaParser::OpRelContext* ctx) override;
 
+    Any visitConditional(EncaParser::ConditionalContext* ctx) override;
+
     Any visitNumDec(EncaParser::NumDecContext *ctx) override;
     Any visitNumFlt(EncaParser::NumFltContext *ctx) override;
     Any visitNumSci(EncaParser::NumSciContext *ctx) override;

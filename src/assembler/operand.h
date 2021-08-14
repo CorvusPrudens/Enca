@@ -138,7 +138,7 @@ class VariableOp : public Operand {
     VariableOp(string n, SymbolTable* t, bool addr) { name = n; table = t; isAddress = addr; }
     ~VariableOp() {}
 
-    Class getClass() override { return isRelative ? NAME_REL : NAME; }
+    Class getClass() override;
     string getIdentifier() override { return name; }
     // Not quite sure what to do here (maybe have pointer to class with more details?)
     uint16_t getValue() override;

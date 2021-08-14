@@ -18,7 +18,7 @@ class SymbolTable; // forward decl
 struct Reference {
 
   Reference() {}
-  Reference(string n) { name = n; }
+  Reference(string n) { name = n; isAddress = false; }
 
   int GetValue(SymbolTable& symbols);
 

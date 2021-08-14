@@ -27,3 +27,12 @@ uint16_t VariableOp::getValue()
 {
   return table->GetSymbol(name).address;
 }
+
+// Oh frick yeah this is so tasty
+Operand::Class VariableOp::getClass()
+{ 
+  if (isAddress)
+    return isRelative ? NUMBER_REL : NUMBER; 
+  else
+    return isRelative ? NAME_REL : NAME; 
+}
