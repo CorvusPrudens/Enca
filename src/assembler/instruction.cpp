@@ -1,5 +1,16 @@
 
 #include "instruction.h"
+#include "error.h"
+
+Mnemonic::Mnemonic(string n, uint32_t op, vector<vector<Operand::Class>> list)  {
+  name = n;
+  opcode = op;
+
+  for (auto& item : list) {
+    validOperands.push_back(item);
+  }
+
+}
 
 void Machine::setBytes(uint32_t word, size_t num_bytes)
 {
@@ -22,6 +33,35 @@ Instruction::Instruction(string mnem, ParseTree* c)
   ctx = c;
 }
 
+bool op_in(Operand::Class c, vector<Operand::Class> classes) {
+  for (auto& cls : classes)
+    if (c == cls) return true;
+  return false;
+}
+
+bool Instruction::verifyOperands() 
+{
+  auto& valid = mnemonics[mnemonic].validOperands;
+  if (operands.size() > valid.size())
+    return false;
+  
+  for (int i = 0; i < valid.size(); i++) 
+  {
+    if (i >= operands.size()) 
+    {
+      if (!op_in(Operand::NONE, valid[i]))
+        return false;
+    }
+    else
+    {
+      if (!op_in(operands[i]->getClass(), valid[i]))
+        return false;
+    }
+  }
+
+  return true;
+}
+
 void Instruction::addOperand(Operand* op) {
   operands.push_back(op);
 }
@@ -39,11 +79,19 @@ uint32_t Instruction::GetSize(Error* err)
 Machine& Instruction::Assemble(Error* err) 
 { 
   if (methods.count(mnemonic) > 0) { 
-    try { 
-      (this->*methods[mnemonic])(err, false); 
-    } catch (int e) { 
-      err->AddNodeErr("malformed arguments", ctx); 
-    } 
+    if (!verifyOperands())
+    {
+      string errmess = "invalid operand";
+      err->AddNodeErr(errmess, ctx);
+    }
+    else
+    {
+      try { 
+        (this->*methods[mnemonic])(err, false); 
+      } catch (int e) { 
+        err->AddNodeErr("malformed arguments", ctx); 
+      } 
+    }
   } else { 
     err->AddNodeErr("unexpected mnemonic \"" + mnemonic + "\"", ctx); 
   } 
@@ -67,7 +115,7 @@ void Instruction::AssembleLdr(Error* err, bool query)
   } else {
     uint32_t code = 0;
     code |= mnemonics[mnemonic].opcode;
-    machine.setBytes(code, WORD_BYTES);
+    machine.setBytes(code, WORD_BYTES * 2);
   }
 }
 void Instruction::AssembleStr(Error* err, bool query)

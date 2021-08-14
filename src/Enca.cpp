@@ -43,11 +43,13 @@ int main(int argc, const char* argv[])
   //   }
   //   cout << "\n";
   // }
+  enca.Complete();
+  
   for (auto& inst : enca.instructions) {
     cout << formatInstruction(inst.machine.bytes) + "\n";
   }
 
-  enca.Complete();
+  
 
   return 0;
 }

@@ -18,6 +18,15 @@ class Operand {
       NUMBER,
       CONDITION,
       NAME,
+
+      REGISTER_REL,
+      NUMBER_REL,
+      CONDITION_REL,
+      NAME_REL,
+
+      NONE,
+
+      CLASS_COUNT,
     };
 
     Operand() {}
@@ -66,7 +75,7 @@ class RegisterOp : public Operand {
     RegisterOp(string name);
     ~RegisterOp() {}
 
-    Class getClass() override { return Class::REGISTER; }
+    Class getClass() override { return isRelative ? REGISTER_REL : REGISTER; }
     uint16_t getValue() override { return (uint16_t) index; }
 
     Index index;
@@ -79,7 +88,7 @@ class NumberOp : public Operand {
     NumberOp(Number n) { number = n; }
     ~NumberOp() {}
 
-    Class getClass() override { return Class::NUMBER; }
+    Class getClass() override { return isRelative ? NUMBER_REL : NUMBER; }
 
     /** Truncates whatever bits were input into a 16 bit word
      * 
@@ -116,7 +125,7 @@ class ConditionOp : public Operand {
     ConditionOp(string c);
     ~ConditionOp() {}
 
-    Class getClass() override { return Class::CONDITION; }
+    Class getClass() override { return isRelative ? CONDITION_REL : CONDITION; }
     uint16_t getValue() override { return (uint16_t) condition; }
 
     Cond condition;
@@ -129,7 +138,7 @@ class VariableOp : public Operand {
     VariableOp(string n, SymbolTable* t, bool addr) { name = n; table = t; isAddress = addr; }
     ~VariableOp() {}
 
-    Class getClass() override { return Class::NAME; }
+    Class getClass() override { return isRelative ? NAME_REL : NAME; }
     string getIdentifier() override { return name; }
     // Not quite sure what to do here (maybe have pointer to class with more details?)
     uint16_t getValue() override;

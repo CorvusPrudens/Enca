@@ -23,6 +23,7 @@ struct Machine {
 };
 
 struct Mnemonic {
+  Mnemonic(string n, uint32_t op, vector<vector<Operand::Class>> list);
   Mnemonic(string n, uint32_t op) {
     name = n;
     opcode = op;
@@ -31,10 +32,16 @@ struct Mnemonic {
   ~Mnemonic() {}
   string name;
   uint32_t opcode;
+  vector<vector<Operand::Class>> validOperands;
 };
 
-#define M(name, opcode) \
-{name, Mnemonic(name, opcode)}
+#define M(name, opcode, ...) \
+{name, Mnemonic(name, opcode, {__VA_ARGS__})}
+
+#define ARITHMETIC_OPERANDS \
+{Operand::REGISTER}, \
+{Operand::NAME, Operand::NUMBER, Operand::NUMBER_REL, Operand::REGISTER, Operand::REGISTER_REL}, \
+{Operand::REGISTER, Operand::NONE}
 
 class Instruction {
   public:
@@ -43,13 +50,29 @@ class Instruction {
     ~Instruction() {}
 
     inline static unordered_map<string, Mnemonic> mnemonics = {
-      M("nop", 0x00), M("ldr", 0x01), M("str", 0x02), M("mov", 0x05),
-      M("cmp", 0x03), M("cps", 0x04), M("add", 0x05), M("sub", 0x06),
-      M("mul", 0x07), M("div", 0x08), M("mod", 0x09), M("and", 0x0A),
-      M("or", 0x0B),  M("xor", 0x0C), M("not", 0x0D), M("lsl", 0x0E),
-      M("lsr", 0x0F), M("jmp", 0x10), M("push", 0x11),M("pop", 0x12),
+      M("nop", 0x00), 
+      M("ldr", 0x01, {Operand::REGISTER}, {Operand::NAME, Operand::NUMBER, Operand::NUMBER_REL, Operand::REGISTER_REL}), 
+      M("str", 0x02, {Operand::REGISTER}, {Operand::NAME, Operand::NUMBER_REL, Operand::REGISTER_REL}),
+      M("mov", 0x05),
+      M("cmp", 0x03, {Operand::REGISTER}, {Operand::NAME, Operand::NUMBER, Operand::NUMBER_REL, Operand::REGISTER, Operand::REGISTER_REL}), 
+      M("cps", 0x04, {Operand::CONDITION}, ARITHMETIC_OPERANDS),
+      M("add", 0x05, ARITHMETIC_OPERANDS), 
+      M("sub", 0x06, ARITHMETIC_OPERANDS),
+      M("mul", 0x07, ARITHMETIC_OPERANDS), 
+      M("div", 0x08, ARITHMETIC_OPERANDS), 
+      M("mod", 0x09, ARITHMETIC_OPERANDS), 
+      M("and", 0x0A, ARITHMETIC_OPERANDS),
+      M("or",  0x0B, ARITHMETIC_OPERANDS),  
+      M("xor", 0x0C, ARITHMETIC_OPERANDS), 
+      M("not", 0x0D, {Operand::NAME, Operand::NUMBER, Operand::NUMBER_REL, Operand::REGISTER, Operand::REGISTER_REL}, {Operand::REGISTER, Operand::NONE}), 
+      M("lsl", 0x0E, ARITHMETIC_OPERANDS),
+      M("lsr", 0x0F, ARITHMETIC_OPERANDS), 
+      M("jmp", 0x10, {Operand::NAME, Operand::NUMBER_REL, Operand::REGISTER_REL}), 
+      M("push",0x11, {Operand::REGISTER}),
+      M("pop", 0x12, {Operand::REGISTER}),
     };
 
+    bool verifyOperands();
     void setMnemonic(string& mnem);
     void addOperand(Operand* op);
     void setCondition(Operand* cond) { condition = cond; }

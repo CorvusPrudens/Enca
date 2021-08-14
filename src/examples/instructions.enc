@@ -190,6 +190,7 @@ logical_shift_right_instruction:
 
 jump:
   jmp jump
+  jmp data // this indicates that we should jump to the address contained by _data_
   jmp [42]
   jmp [r1]
   jmp [r1, 4]
