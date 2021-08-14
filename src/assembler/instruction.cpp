@@ -10,7 +10,7 @@ void Machine::setBytes(uint32_t word, size_t num_bytes)
   }
 }
 
-Instruction::Instruction(string mnem, ParserRuleContext* c)
+Instruction::Instruction(string mnem, ParseTree* c)
 {
   // string* idx = std::find(mnemonics, mnemonics + OP_COUNT, mnem);
   // if (idx == mnemonics + OP_COUNT) throw mnem;

@@ -14,6 +14,7 @@
 
 using namespace std;
 using namespace antlr4;
+using tree::ParseTree;
 
 struct Machine {
   uint32_t size = 0;
@@ -38,7 +39,7 @@ struct Mnemonic {
 class Instruction {
   public:
 
-    Instruction(string mnem, ParserRuleContext* c);
+    Instruction(string mnem, ParseTree* c);
     ~Instruction() {}
 
     inline static unordered_map<string, Mnemonic> mnemonics = {
@@ -108,7 +109,7 @@ class Instruction {
     string mnemonic;
     vector<Operand*> operands;
     Operand* condition;
-    ParserRuleContext* ctx;
+    ParseTree* ctx;
     Machine machine;
 };
 
