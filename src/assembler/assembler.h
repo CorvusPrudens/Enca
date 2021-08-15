@@ -104,6 +104,7 @@ class Assembler : public EncaBaseVisitor {
 
     Any visitDataArray(EncaParser::DataArrayContext* ctx) override;
     Any visitDataSingle(EncaParser::DataSingleContext* ctx) override;
+    Any visitSpecifier_list(EncaParser::Specifier_listContext* ctx) override;
 
     Any visitStorage(EncaParser::StorageContext* ctx) override;
     Any visitDimEmpty(EncaParser::DimEmptyContext* ctx) override;

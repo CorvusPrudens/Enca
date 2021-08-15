@@ -216,9 +216,12 @@ Any Assembler::visitDataArray(EncaParser::DataArrayContext* ctx)
   }
   else
   {
-    while (sym.data.size() < dimensions) {
-      sym.data.push_back(Value(0));
+    if (dimensions != -1) {
+      while (sym.data.size() < dimensions) {
+        sym.data.push_back(Value(0));
+      }
     }
+    
   }
   
   symbols.AddSymbol(sym, &err, ctx->storage()->NAME());
@@ -249,6 +252,21 @@ Any Assembler::visitStorage(EncaParser::StorageContext* ctx)
   }
   data_symbols.put(ctx, sym);
   return visit(ctx->dimension());
+}
+Any Assembler::visitSpecifier_list(EncaParser::Specifier_listContext* ctx)
+{
+  Attributes attr;
+  for (auto item : ctx->specifier()) {
+    int value = 0;
+    if (item->number() != nullptr)
+    {
+      visit(item->number());
+      value = numbers.get(item->number()).getValue();
+    }
+    attr[item->NAME()->getText()] = value;
+  }
+  attributes.put(ctx, attr);
+  return nullptr;
 }
 Any Assembler::visitDimEmpty(EncaParser::DimEmptyContext* ctx)
 {
@@ -281,12 +299,14 @@ Any Assembler::visitVarAddr(EncaParser::VarAddrContext* ctx)
 
 Any Assembler::visitDataNumber(EncaParser::DataNumberContext* ctx)
 {
+  visit(ctx->number());
   Value v(numbers.get(ctx->number()).getValue());
   values.put(ctx, v);
   return nullptr;
 }
 Any Assembler::visitDataVariable(EncaParser::DataVariableContext* ctx)
 {
+  visit(ctx->variable());
   values.put(ctx, values.get(ctx->variable()));
   return nullptr;
 }

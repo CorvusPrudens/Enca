@@ -177,12 +177,56 @@ bool Section::ValidRange(size_t s, size_t e, Symbol& sym, Error* err, ParseTree*
   return true;
 }
 
-// how to deal with word size?
-vector<uint8_t>& Section::GetData()
+SymbolRange& Section::CheckAddress(uint32_t addr)
 {
-  for (int i = start; i < end; i++) {
-    
+  for (auto& sr : symbols) {
+    if (addr >= sr.start && addr < sr.end)
+      return sr;
   }
+  return emptyRange;
+}
+
+// TODO -- make word size a property of _value_ (for now we'll always assume 16 bits)
+vector<uint8_t>& Section::GetData(SymbolTable& sr)
+{
+  // TODO -- make this more efficient for large data ranges
+  size_t i = start;
+  SymbolRange* range = nullptr;
+  while (i < end)
+  {
+    if (range == nullptr)
+    {
+      SymbolRange& trange = CheckAddress(i);
+      if (trange.symbol != nullptr)
+      {
+        range = &trange;
+        int d = trange.symbol->data[i - trange.start].GetValue(sr);
+        data.push_back(d & 255);
+        data.push_back(d >> 8);
+        i++;
+      }
+      else
+      {
+        data.push_back(0);
+        data.push_back(0);
+        i++;
+      }
+    }
+    else
+    {
+      if (i >= range->end) {
+        range = nullptr;
+      }
+      else
+      {
+        int d = range->symbol->data[i - range->start].GetValue(sr);
+        data.push_back(d & 255);
+        data.push_back(d >> 8);
+        i++;
+      }
+    }
+  }
+  return data;
 }
 
 void SymbolTable::AddSymbol(Symbol& s, Error* err, ParseTree* node)
@@ -227,7 +271,7 @@ Symbol& SymbolTable::GetSymbol(string name)
 void SymbolTable::WriteFiles(string prefix)
 {
   for (auto& pair : sections) {
-    auto& data = pair.second.GetData();
+    auto& data = pair.second.GetData(*this);
     ofstream outfile(prefix + "_" + pair.first + ".bin", ios::out | ios::binary);
     for (auto value : data) {
       outfile << value;

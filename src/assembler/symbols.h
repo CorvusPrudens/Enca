@@ -87,7 +87,8 @@ class Section {
 
     void AddSymbol(Symbol& sym, Error* err, ParseTree* node);
     bool ValidRange(size_t s, size_t e, Symbol& sym, Error* err, ParseTree* node);
-    vector<uint8_t>& GetData();
+    vector<uint8_t>& GetData(SymbolTable& sr);
+    SymbolRange& CheckAddress(uint32_t addr);
     void Push(SymbolRange& sr);
 
     inline static Attributes data_attributes = {
@@ -100,6 +101,7 @@ class Section {
 
     string name;
     list<SymbolRange> symbols;
+    inline static SymbolRange emptyRange{nullptr, 0, 0};
     vector<uint8_t> data;
     size_t start;
     size_t end;
@@ -122,7 +124,7 @@ class SymbolTable {
     inline static unordered_map<string, Section> sections = {
       {"ram", Section("ram", 65, 1792)}, // 256 words reserved for stack
       {"rom", Section("rom", 0, 0x10000)},
-      {"flash", Section("flash", 0, 0x800000)},
+      // {"flash", Section("flash", 0, 0x800000)}, // we'll leave this one out for now so it doesn't take forever
     };
 
     unordered_map<string, Symbol> symbols;
