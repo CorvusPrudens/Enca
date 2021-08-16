@@ -126,7 +126,7 @@ class ConditionOp : public Operand {
     ~ConditionOp() {}
 
     Class getClass() override { return isRelative ? CONDITION_REL : CONDITION; }
-    uint16_t getValue() override { return (uint16_t) condition; }
+    uint16_t getValue() override;
 
     Cond condition;
 };

@@ -41,7 +41,13 @@ void Assembler::Complete()
 Any Assembler::visitStatLab(EncaParser::StatLabContext* ctx)
 {
   Symbol s(ctx->label()->NAME()->getText(), instructions.size());
-  symbols.AddSymbol(s, &err, ctx);
+  try {
+    symbols.AddSymbol(s, &err, ctx);
+  } catch (int e) {
+    string errmess = "label already defined";
+    err.AddNodeErr(errmess, ctx);
+  }
+  
   return nullptr;
 }
 

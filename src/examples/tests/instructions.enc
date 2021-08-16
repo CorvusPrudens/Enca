@@ -192,11 +192,18 @@ logical_shift_right_instruction:
   lsr r0, 42, r2
 
 jump:
-  jmp jump
+  jmp jump // treat this as immediate value
   jmp data // this indicates that we should jump to the address contained by _data_
   jmp [42]
   jmp [r1]
   jmp [r1, 4]
+
+jump_conditional:
+  jmp jump -> carry
+  jmp data -> greater
+  jmp [42] -> zero
+  jmp [r1] -> equal
+  jmp [r1, 4] -> negative
 
 push_instruction:
   push r0

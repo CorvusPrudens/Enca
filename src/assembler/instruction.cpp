@@ -299,9 +299,20 @@ void Instruction::AssembleCmp(Error* err, bool query)
 // TODO -- Not ready yet (3 word instruction)
 void Instruction::AssembleCps(Error* err, bool query)
 {
-  if (query) {
-    TYPICAL_SIZE(1)
-  } else {
+  if (query) 
+  {
+    switch (operands[2]->getClass()) 
+    { 
+      case Operand::Class::REGISTER: 
+        machine.size = WORD_BYTES * 2; 
+        break; 
+      default:
+        machine.size = WORD_BYTES * 3;
+        break;
+    }
+  } 
+  else 
+  {
     uint32_t code = 0;
     AddOpcode(code, err);
     AddVariant(code, operands[1], err);
@@ -433,6 +444,14 @@ void Instruction::AssembleJmp(Error* err, bool query)
     }
 
     AddRegisters(code, nullptr, ptr, nullptr, err);
+
+    if (condition != nullptr)
+    {
+      uint32_t cond_encoding = condition->getValue();
+      Operand1Bits.Set(code, cond_encoding);
+      ResultsBits.Set(code, cond_encoding >> 3);
+    }
+
     machine.setBytes(code, machine.size);
   }
 }

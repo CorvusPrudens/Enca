@@ -126,6 +126,9 @@ string getMnemonic(int code) {
     if (code == pair.second.opcode) {
       return pair.first;
     }
+    else if (code == pair.second.conditional) {
+      return pair.first + " (conditional)";
+    }
   }
   return "<invalid opcode>";
 }

@@ -82,7 +82,7 @@ class Instruction {
       M("not", 0x0D, {Operand::NAME, Operand::NUMBER, Operand::NUMBER_REL, Operand::REGISTER, Operand::REGISTER_REL}, {Operand::REGISTER, Operand::NONE}), 
       M("lsl", 0x0E, ARITHMETIC_OPERANDS),
       M("lsr", 0x0F, ARITHMETIC_OPERANDS),
-      MC("jmp", 0x10, 0x1F, {Operand::NAME, Operand::NUMBER_REL, Operand::REGISTER_REL}),
+      MC("jmp", 0x10, 0x1F, {Operand::NAME, Operand::NUMBER, Operand::NUMBER_REL, Operand::REGISTER_REL}),
       M("push",0x11, {Operand::REGISTER}),
       M("pop", 0x12, {Operand::REGISTER}),
     };

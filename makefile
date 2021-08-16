@@ -63,7 +63,7 @@ reset: clean
 	@ if [ -d "${SRC}/dist" ]; then rm -rf ${SRC}/dist; fi
 
 run: $(PROJ_BUILD)/$(NAME_L)
-	$(PROJ_BUILD)/$(NAME_L) ${EXAMPLE_PATH}
+	$(PROJ_BUILD)/$(NAME_L) ${EXAMPLE_PATH} --debug
 
 # graph: ${SRC}/build/corax
 # 	${SRC}/build/corax ${SRC}/examples/test.cx --graph | dot -Tpng -Gdpi=300 -o graph.png

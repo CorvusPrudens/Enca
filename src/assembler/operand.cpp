@@ -23,6 +23,11 @@ ConditionOp::ConditionOp(string c)
   condition = (Cond) (idx - Names);
 }
 
+uint16_t ConditionOp::getValue() 
+{ 
+  return 1 << ((uint16_t) condition); 
+}
+
 uint16_t VariableOp::getValue()
 {
   return table->GetSymbol(name).address;
@@ -32,6 +37,8 @@ uint16_t VariableOp::getValue()
 Operand::Class VariableOp::getClass()
 { 
   if (isAddress)
+    return isRelative ? NUMBER_REL : NUMBER; 
+  else if (table->GetSymbol(name).isLabel)
     return isRelative ? NUMBER_REL : NUMBER; 
   else
     return isRelative ? NAME_REL : NAME; 
