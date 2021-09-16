@@ -124,7 +124,7 @@ class SymbolTable {
     inline static unordered_map<string, Section> sections = {
       {"ram", Section("ram", 65, 1792)}, // 256 words reserved for stack
       {"rom", Section("rom", 0, 0x10000)},
-      // {"flash", Section("flash", 0, 0x800000)}, // we'll leave this one out for now so it doesn't take forever
+      {"flash", Section("flash", 0, 0x800000)},
     };
 
     unordered_map<string, Symbol> symbols;

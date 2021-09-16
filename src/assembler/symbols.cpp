@@ -194,43 +194,57 @@ SymbolRange& Section::CheckAddress(uint32_t addr)
 // TODO -- make word size a property of _value_ (for now we'll always assume 16 bits)
 vector<uint8_t>& Section::GetData(SymbolTable& sr)
 {
-  // TODO -- make this more efficient for large data ranges
-  size_t i = start;
-  SymbolRange* range = nullptr;
-  while (i < end)
+  data.resize(end * 2);
+  for (int i = 0; i < end * 2; i++)
+    data[i] = 0;
+
+  for (auto& range : symbols)
   {
-    if (range == nullptr)
+    for (int i = range.start; i < range.end; i++)
     {
-      SymbolRange& trange = CheckAddress(i);
-      if (trange.symbol != nullptr)
-      {
-        range = &trange;
-        int d = trange.symbol->data[i - trange.start].GetValue(sr);
-        data.push_back(d & 255);
-        data.push_back(d >> 8);
-        i++;
-      }
-      else
-      {
-        data.push_back(0);
-        data.push_back(0);
-        i++;
-      }
-    }
-    else
-    {
-      if (i >= range->end) {
-        range = nullptr;
-      }
-      else
-      {
-        int d = range->symbol->data[i - range->start].GetValue(sr);
-        data.push_back(d & 255);
-        data.push_back(d >> 8);
-        i++;
-      }
+      int d = range.symbol->data[i - range.start].GetValue(sr);
+      data[i * 2] = d & 255;
+      data[i * 2 + 1] = d >> 8;
     }
   }
+
+  // // TODO -- make this more efficient for large data ranges
+  // size_t i = start;
+  // SymbolRange* range = nullptr;
+  // while (i < end)
+  // {
+  //   if (range == nullptr)
+  //   {
+  //     SymbolRange& trange = CheckAddress(i);
+  //     if (trange.symbol != nullptr)
+  //     {
+  //       range = &trange;
+  //       int d = trange.symbol->data[i - trange.start].GetValue(sr);
+  //       data.push_back(d & 255);
+  //       data.push_back(d >> 8);
+  //       i++;
+  //     }
+  //     else
+  //     {
+  //       data.push_back(0);
+  //       data.push_back(0);
+  //       i++;
+  //     }
+  //   }
+  //   else
+  //   {
+  //     if (i >= range->end) {
+  //       range = nullptr;
+  //     }
+  //     else
+  //     {
+  //       int d = range->symbol->data[i - range->start].GetValue(sr);
+  //       data.push_back(d & 255);
+  //       data.push_back(d >> 8);
+  //       i++;
+  //     }
+  //   }
+  // }
   return data;
 }
 
