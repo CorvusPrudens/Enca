@@ -157,6 +157,11 @@ void Section::AddSymbol(Symbol& sym, Error* err, ParseTree* node)
       SymbolRange fsr(&sym, sr.start, sr.end);
       Push(sr);
     }
+    else
+    {
+      // TODO -- this should really be a warning that attempts to place it after
+      err->AddNodeErr("unable to place " + sym.name + " at given address", node);
+    }
   }
 }
 
