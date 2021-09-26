@@ -53,10 +53,9 @@ class RegisterOp : public Operand {
       R2,
       R3,
       R4,
-      R5,
-      R6,
       SP,
       BP,
+      PC,
       REG_COUNT,
     };
 
@@ -66,10 +65,9 @@ class RegisterOp : public Operand {
       "r2",
       "r3",
       "r4",
-      "r5",
-      "r6",
       "sp",
       "bp",
+      "pc",
     };
 
     RegisterOp(string name);
